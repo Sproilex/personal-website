@@ -1,0 +1,36 @@
+--- 
+import { Icon } from 'astro-icon/components'
+---
+<nav class="bg-surface bg-opacity-10 border-border border-2 rounded-lg px-4 py-2 m-2 flex items-center justify-between backdrop-blur-sm">
+
+    <div>
+        <img src="/images/logo_placeholder.png" alt="Logo" class="h-8"/>
+    </div>
+    <div>
+        <ul class="flex space-x-4">
+            <li><a href="/" class="text-primary hover:text-primary-dark">Explorer</a></li>
+            <li><a href="/projects" class="text-primary hover:text-primary-dark">Projects</a></li>
+            <li><a href="/contact" class="text-primary hover:text-primary-dark">Contact</a></li>
+        </ul>
+    </div>
+    <div class="flex space-x-2 justify-center items-center">
+        <button class="social-media-btn" aria-label="LinkedIn">
+            <Icon class="icon" name="mdi:linkedin" />
+        </button>
+        <button class="social-media-btn" aria-label="GitHub">
+            <Icon class="icon" name="mdi:github" />
+        </button>
+        <button class="text-white px-4 py-2 flex gap-2 justify-center items-center rounded hover:bg-primary-dark">
+            Resume
+            <Icon class="icon inline-block" name="mdi:download-box" />
+        </button>
+    </div>
+
+</nav>
+<style>
+    @import "tailwindcss";
+
+    .social-media-btn, .social-media-btn .icon, .icon{
+        @apply w-6 h-6 justify-center items-center;
+    }
+</style>
