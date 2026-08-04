@@ -1,5 +1,12 @@
+@import "@xyflow/react/dist/style.css" layer(base);
 @import "tailwindcss";
 
+/*
+  Violet circuit theme tokens.
+  Tailwind v4 auto-generates utilities from any --color-* / --font-* var
+  declared in @theme, so bg-surface, text-accent, font-display, etc.
+  all work directly in markup with no config file needed.
+*/
 @theme {
   /* surfaces */
   --color-bg: #14102b;
@@ -47,34 +54,37 @@
 }
 
 @layer base {
-  body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    font-family: var(--font-sans);
-  }
+    *{
+        box-sizing: border-box;
+    }
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+    }
 
-  h1,
-  h2,
-  h3 {
-    font-family: var(--font-display);
-    font-weight: 600;
-  }
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-display);
+        font-weight: 600;
+    }
 
-  code,
-  kbd,
-  .mono {
-    font-family: var(--font-mono);
-  }
+    code,
+    kbd,
+    .mono {
+        font-family: var(--font-mono);
+    }
 
-  ::selection {
-    background-color: var(--color-accent-soft);
-    color: var(--color-text);
-  }
+    ::selection {
+        background-color: var(--color-accent-soft);
+        color: var(--color-text);
+    }
 
-  :focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-  }
+    :focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+    }
 }
 
 @layer components {
@@ -203,3 +213,57 @@
     color: var(--color-text-muted);
   }
 }
+
+/*
+  React Flow theming.
+  Deliberately left outside any @layer: unlayered CSS always wins over
+  layer(base), so these override the library defaults regardless of
+  import order. Full variable reference:
+  https://reactflow.dev/learn/customization/theming
+*/
+.react-flow {
+  background-color: var(--color-bg);
+
+  /* edges */
+  --xy-edge-stroke-default: var(--color-border-strong);
+  --xy-edge-stroke-width-default: 1.5;
+  --xy-edge-stroke-selected-default: var(--color-accent);
+  --xy-connectionline-stroke-default: var(--color-accent);
+  --xy-connectionline-stroke-width-default: 2;
+
+  /* nodes */
+  --xy-node-color-default: var(--color-text);
+  --xy-node-border-default: 1px solid var(--color-border);
+  --xy-node-background-color-default: var(--color-surface);
+  --xy-node-group-background-color-default: color-mix(in srgb, var(--color-surface-2) 60%, transparent);
+  --xy-node-boxshadow-hover-default: 0 0 0 1px var(--color-border-strong);
+  --xy-node-boxshadow-selected-default: 0 0 0 1.5px var(--color-accent);
+
+  /* handles */
+  --xy-handle-background-color-default: var(--color-accent);
+  --xy-handle-border-color-default: var(--color-bg);
+
+  /* selection */
+  --xy-selection-background-color-default: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --xy-selection-border-default: 1px dotted var(--color-accent);
+
+  /* background pattern (dots / lines / cross) */
+  --xy-background-pattern-dots-color-default: var(--color-border);
+  --xy-background-pattern-lines-color-default: var(--color-border);
+  --xy-background-pattern-cross-color-default: var(--color-border-strong);
+
+  /* minimap */
+  --xy-minimap-background-color-default: var(--color-surface);
+
+  /* controls panel */
+  --xy-controls-button-background-color-default: var(--color-surface);
+  --xy-controls-button-background-color-hover-default: var(--color-surface-2);
+  --xy-controls-button-color-default: var(--color-text-muted);
+  --xy-controls-button-color-hover-default: var(--color-text);
+  --xy-controls-button-border-color-default: var(--color-border);
+  --xy-controls-box-shadow-default: 0 0 2px 1px rgba(0, 0, 0, 0.4);
+
+  /* misc */
+  --xy-attribution-background-color-default: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  --xy-resize-background-color-default: var(--color-accent);
+}border
