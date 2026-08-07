@@ -1,0 +1,22 @@
+---
+
+interface Props{
+    tabs: string[];
+}
+
+const { tabs } = Astro.props;
+
+let selectedTab = 0;
+let tabName = tabs[selectedTab];
+
+---
+<ul class="flex items-stretch text-sm font-bold mb-4">
+    {tabs.map((tab, index) => (
+        <li class={`tab-item flex p-1 border-border-strong border-b-2 px-4 w-full justify-center cursor-pointer`} >
+            {tab}
+        </li>
+    ))}
+</ul>
+<div>
+    <slot name={tabName}/>
+</div>

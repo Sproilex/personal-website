@@ -4,6 +4,7 @@ import { getCollection, getEntry } from 'astro:content';
 
 import TechnologyBadge from '../technology-badge.astro';
 import Panel from './panel.astro';
+import Tabs from '../tabs.astro';
 
 const projects = await getCollection('projects');
 ---
@@ -23,58 +24,54 @@ const projects = await getCollection('projects');
         </div>
     </div>
 
-    <ul class="flex items-stretch text-sm font-bold mb-4">
-        <li class="flex p-1 border-border-strong border-b-2 px-4 w-full justify-center">Overview</li>
-        <li class="flex p-1 border-border border-b-2 px-4 w-full justify-center">Tech Stack</li>
-        <li class="flex p-1 border-border border-b-2 px-4 w-full justify-center">Details</li>
-    </ul>
+    <Tabs tabs={['Overview', 'Tech Stack', 'Details']}>
+        <Fragment slot="Overview">
+            <h4 class="text-lg font-bold mb-1">Summary</h4>
+            <p class="text-sm">{projects[0].data.description}</p>
 
-    <div aria-label="overview">
-        <h4 class="text-lg font-bold mb-1">Summary</h4>
-        <p class="text-sm">{projects[0].data.description}</p>
+            <h4 class="text-lg font-bold mb-1 mt-4">My Role</h4>
+            <p class="text-sm">{projects[0].data.role}</p>
 
-        <h4 class="text-lg font-bold mb-1 mt-4">My Role</h4>
-        <p class="text-sm">{projects[0].data.role}</p>
-
-        <h4 class="text-lg font-bold mb-1 mt-4">Technologies</h4>
-        <div class="flex gap-1 flex-wrap">
-            {projects[0].data.technologies?.splice(0, 6).map((tag) => (
-                <TechnologyBadge name={tag} />
-            ))}
-        </div>
-        {projects[0].data.technologies?.length > 6 && (
-            <span class="text-sm font-bold text-primary-strong">+{projects[0].data.technologies.length - 6} more</span>
-        )}
-
-        <h4 class="text-lg font-bold mb-1 mt-4">Highlights</h4>
-        <div class="flex">
-            <div class="flex gap-4 p-2 border-border border-r-2">
-                <Icon class="w-8 h-8" name="mdi:chart-line" />
-                <span>
-                    <span class="text-lg font-bold">40%</span>
-                    <p class="text-xs">Increase in productivity</p>
-                </span>
+            <h4 class="text-lg font-bold mb-1 mt-4">Technologies</h4>
+            <div class="flex gap-1 flex-wrap">
+                {projects[0].data.technologies?.splice(0, 6).map((tag) => (
+                    <TechnologyBadge name={tag} />
+                ))}
             </div>
-            <div class="flex gap-4 p-2 border-border border-r-2">
-                <Icon class="w-8 h-8" name="mdi:office-building" />
-                <span>
-                    <span class="text-lg font-bold">+10</span>
-                    <p class="text-xs">Active Companies</p>
-                </span>
-            </div>
-            <div class="flex gap-4 p-2">
-                <Icon class="w-8 h-8" name="mdi:office-building" />
-                <span>
-                    <span class="text-lg font-bold">+10</span>
-                    <p class="text-xs">Active Companies</p>
-                </span>
-            </div>
-        </div>
+            {projects[0].data.technologies?.length > 6 && (
+                <span class="text-sm font-bold text-primary-strong">+{projects[0].data.technologies.length - 6} more</span>
+            )}
 
-        <button class="flex bg-accent hover:bg-accent-hover hover:cursor-pointer hover:scale-105 items-center gap-6 px-4 py-3 rounded-lg font-bold mt-4 mx-auto">
-            See All Details
-            <Icon class="w-5 h-5" name="mdi:open-in-new" />
-        </button>
-        
-    </div>
+            <h4 class="text-lg font-bold mb-1 mt-4">Highlights</h4>
+            <div class="flex">
+                <div class="flex gap-4 p-2 border-border border-r-2">
+                    <Icon class="w-8 h-8" name="mdi:chart-line" />
+                    <span>
+                        <span class="text-lg font-bold">40%</span>
+                        <p class="text-xs">Increase in productivity</p>
+                    </span>
+                </div>
+                <div class="flex gap-4 p-2 border-border border-r-2">
+                    <Icon class="w-8 h-8" name="mdi:office-building" />
+                    <span>
+                        <span class="text-lg font-bold">+10</span>
+                        <p class="text-xs">Active Companies</p>
+                    </span>
+                </div>
+                <div class="flex gap-4 p-2">
+                    <Icon class="w-8 h-8" name="mdi:office-building" />
+                    <span>
+                        <span class="text-lg font-bold">+10</span>
+                        <p class="text-xs">Active Companies</p>
+                    </span>
+                </div>
+            </div>
+
+            <button class="flex bg-accent hover:bg-accent-hover hover:cursor-pointer hover:scale-105 items-center gap-6 px-4 py-3 rounded-lg font-bold mt-4 mx-auto">
+                See All Details
+                <Icon class="w-5 h-5" name="mdi:open-in-new" />
+            </button>
+
+        </Fragment>
+    </Tabs>
 </Panel>
