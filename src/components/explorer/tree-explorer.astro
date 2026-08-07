@@ -1,6 +1,10 @@
 ---
-
+import Panel from './panel.astro';
+import { Icon } from 'astro-icon/components';
 ---
-<div class="bg-surface-2 w-4xl flex flex-col rounded-b-lg">
-
-</div>
+<Panel tabTitle="Explorer">
+    <div class="w-full flex p-2 rounded-lg border-border border-2 gap-2 items-center px-4 py-2">
+        <Icon class="w-4 h-4" name="mdi:search" />
+        <input class="focus:outline-none" type="text" placeholder="Search projects..." class="" />
+    </div>
+</Panel>
