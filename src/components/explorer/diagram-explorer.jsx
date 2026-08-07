@@ -4,7 +4,7 @@ import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/
 const initialNodes = [
   { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'SARA Automation Agent' } },
   { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'NodeJS' } },
-  { id: 'n3', position: { x: 100, y: 000 }, data: { label: 'React' } },
+  { id: 'n3', position: { x: 100, y: 0 }, data: { label: 'React' } },
   { id: 'n4', position: { x: 100, y: 100 }, data: { label: 'Mysql' } },
 ];
 const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }, { id: 'n1-n3', source: 'n1', target: 'n3' }, { id: 'n1-n4', source: 'n1', target: 'n4' }];
