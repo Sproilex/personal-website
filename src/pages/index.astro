@@ -2,14 +2,12 @@
 import SchemaLayout from '../layouts/schema.astro';
 import DiagramExplorer from '../components/explorer/diagram-explorer.jsx';
 import ItemInspector from '../components/explorer/item-inspector.astro';
+import TreeExplorer from '../components/explorer/tree-explorer.astro';
 ---
 
 <SchemaLayout title="Lead Software Engineer">
     <div class="pt-20 flex justify-items-stretch h-dvh overflow-y-hidden">
-        <div>
-            <h1 class="text-4xl font-bold text-center mb-4">SARA Automation Agent</h1>
-            <p class="text-lg text-center mb-8">A visual representation of the SARA Automation Agent architecture.</p>
-        </div>
+        <TreeExplorer/>
         <div class="w-full h-[calc(50vh)] flex justify-center items-center border-border border-2 rounded-lg m-2">
             <DiagramExplorer client:load/>
         </div>
