@@ -1,6 +1,6 @@
 ---
 import SchemaLayout from '../layouts/schema.astro';
-import DiagramExplorer from '../components/explorer/diagram-explorer.jsx';
+import DiagramExplorer from '../components/explorer/diagram-explorer';
 import ItemInspector from '../components/explorer/item-inspector.astro';
 import TreeExplorer from '../components/explorer/tree-explorer.astro';
 ---
@@ -8,7 +8,7 @@ import TreeExplorer from '../components/explorer/tree-explorer.astro';
 <SchemaLayout title="Lead Software Engineer">
     <div class="pt-20 flex justify-items-stretch h-dvh overflow-y-hidden">
         <TreeExplorer/>
-        <div class="w-full h-[calc(50vh)] flex justify-center items-center border-border border-2 rounded-lg m-2">
+        <div class="w-full min-h-0 flex justify-center items-center border-border border-2 rounded-lg m-2">
             <DiagramExplorer client:load/>
         </div>
         <ItemInspector/>
