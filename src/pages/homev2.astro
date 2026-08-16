@@ -1,0 +1,266 @@
+---
+import '../styles/global.css'
+import '@fontsource/space-grotesk/600.css';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="Stiven Ilarraza — Lead Software Engineer" />
+    <title>Stiven Ilarraza — Lead Software Engineer</title>
+  </head>
+
+  <body class="m-0 h-dvh overflow-hidden bg-bg text-text">
+    <main class="relative h-dvh w-full overflow-hidden">
+
+      <!-- ============================================================
+           STAR FIELD
+           ============================================================ -->
+
+      <div
+        id="stars"
+        class="pointer-events-none absolute inset-0 z-0 h-full w-full"
+        aria-hidden="true"
+      ></div>
+
+
+      <!-- ============================================================
+           BACKGROUND ATMOSPHERE
+           ============================================================ -->
+
+      <div
+        class="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_70%_50%,color-mix(in_srgb,var(--color-accent)_7%,transparent),transparent_35%)]"
+        aria-hidden="true"
+      ></div>
+
+
+      <!-- ============================================================
+           SIDEBAR
+           ============================================================ -->
+
+      <aside
+        class="relative z-20 flex h-full w-[80px] shrink-0 flex-col border-r border-border bg-bg/60 backdrop-blur-sm"
+      >
+
+        <!-- Logo -->
+        <div
+          class="flex h-[72px] shrink-0 items-center justify-center border-b border-border"
+        >
+          <a
+            href="/"
+            class="font-display text-sm font-medium tracking-[-0.08em] text-text"
+            aria-label="Home"
+          >
+            S
+            <span class="text-accent">/</span>
+            I
+          </a>
+        </div>
+
+
+        <!-- Navigation -->
+        <nav class="flex flex-1 flex-col">
+
+          <a
+            href="/"
+            class="group relative flex h-[68px] flex-col justify-center px-4 transition-colors"
+          >
+            <span class="font-mono text-[7px] tracking-widest text-accent">
+              01
+            </span>
+
+            <span
+              class="mt-1 text-[8px] uppercase tracking-[0.14em] text-text-muted transition-colors group-hover:text-text"
+            >
+              Home
+            </span>
+
+            <!-- Active indicator -->
+            <span
+              class="absolute right-0 top-0 h-full w-px bg-accent"
+            ></span>
+          </a>
+
+
+          <a
+            href="#projects"
+            class="group flex h-[68px] flex-col justify-center px-4"
+          >
+            <span class="font-mono text-[7px] tracking-widest text-text-faint">
+              02
+            </span>
+
+            <span
+              class="mt-1 text-[8px] uppercase tracking-[0.14em] text-text-faint transition-colors group-hover:text-text-muted"
+            >
+              Projects
+            </span>
+          </a>
+
+
+          <a
+            href="#about"
+            class="group flex h-[68px] flex-col justify-center px-4"
+          >
+            <span class="font-mono text-[7px] tracking-widest text-text-faint">
+              03
+            </span>
+
+            <span
+              class="mt-1 text-[8px] uppercase tracking-[0.14em] text-text-faint transition-colors group-hover:text-text-muted"
+            >
+              About
+            </span>
+          </a>
+
+
+          <a
+            href="#contact"
+            class="group flex h-[68px] flex-col justify-center px-4"
+          >
+            <span class="font-mono text-[7px] tracking-widest text-text-faint">
+              04
+            </span>
+
+            <span
+              class="mt-1 text-[8px] uppercase tracking-[0.14em] text-text-faint transition-colors group-hover:text-text-muted"
+            >
+              Contact
+            </span>
+          </a>
+
+        </nav>
+
+
+        <!-- Social links -->
+        <div
+          class="flex shrink-0 items-center justify-center gap-4 border-t border-border py-5"
+        >
+
+          <a
+            href="#"
+            aria-label="GitHub"
+            class="text-text-faint transition-colors hover:text-text"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              class="h-3.5 w-3.5 fill-current"
+              aria-hidden="true"
+            >
+              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.85 10.91.57.1.78-.25.78-.55v-2.1c-3.19.69-3.86-1.54-3.86-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.67.41.35.78 1.04.78 2.1v3.11c0 .3.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+            </svg>
+          </a>
+
+
+          <a
+            href="#"
+            aria-label="LinkedIn"
+            class="text-text-faint transition-colors hover:text-text"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              class="h-3.5 w-3.5 fill-current"
+              aria-hidden="true"
+            >
+              <path d="M20.45 20.45h-3.56v-5.58c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.95v5.67H9.34V8.98h3.42v1.57h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29ZM5.32 7.41a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14ZM3.54 20.45H7.1V8.98H3.54v11.47ZM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0Z" />
+            </svg>
+          </a>
+
+        </div>
+
+      </aside>
+
+
+      <!-- ============================================================
+           HERO CONTENT
+           ============================================================ -->
+
+      <section
+        class="absolute inset-0 z-10 pl-[80px]"
+        aria-labelledby="hero-title"
+      >
+
+        <div class="flex h-full w-full items-center">
+
+          <div class="ml-[8vw] max-w-[540px] pb-[3vh]">
+
+            <!-- Role -->
+            <div class="mb-6 flex items-center gap-3">
+
+              <span class="h-px w-8 bg-accent"></span>
+
+              <span
+                class="font-mono text-[9px] uppercase tracking-[0.22em] text-accent"
+              >
+                Lead Software Engineer
+              </span>
+
+            </div>
+
+
+            <!-- Name -->
+            <h1
+              id="hero-title"
+              class="font-display text-[clamp(3.5rem,7vw,6.5rem)] font-medium uppercase leading-[0.82] tracking-[-0.065em]"
+            >
+              <span class="block text-text">
+                Stiven
+              </span>
+
+              <span class="block text-accent">
+                Ilarraza
+              </span>
+            </h1>
+
+
+            <!-- Description -->
+            <p
+              class="mt-8 max-w-[390px] text-[12px] leading-6 text-text-muted sm:text-[13px]"
+            >
+              Software engineer with over 9 years of experience building
+              products, systems, and digital experiences across the stack.
+            </p>
+
+            <p
+              class="mt-3 max-w-[390px] text-[12px] leading-6 text-text-faint sm:text-[13px]"
+            >
+              I design robust architectures, solve complex problems, and
+              build software that is made to last.
+            </p>
+
+
+            <!-- CTA -->
+            <a
+              href="mailto:hello@example.com"
+              class="group mt-8 inline-flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.2em] text-accent"
+            >
+              <span class="border-b border-accent/40 pb-1 transition-colors group-hover:border-accent">
+                Get in touch
+              </span>
+
+              <span class="transition-transform duration-200 group-hover:translate-x-1">
+                →
+              </span>
+            </a>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- ==============================================================
+         PARTICLES
+         ============================================================== -->
+
+    <script>
+      import "../scripts/stars";
+    </script>
+
+  </body>
+</html>
