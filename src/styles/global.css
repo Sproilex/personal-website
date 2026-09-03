@@ -9,24 +9,17 @@
 */
 @theme {
     /* surfaces */
-    --color-bg: #14102b;
-    --color-surface: #1c1638;
+    --color-bg: #130a2b;
+    --color-surface: #1b1040;
     --color-surface-2: #221b44;
     --color-border: #332a5c;
-    --color-border-strong: #473a7a;
+    --color-accent: #7c3aed;
 
     /* text */
-    --color-text: #efebfa;
+    --color-text: #ffffff;
     --color-text-highlight: #a78bfa;
-    --color-text-muted: #9c90c4;
+    --color-text-muted: #665c8f;
     --color-text-faint: #665c8f;
-
-    /* accent (brand / primary actions) */
-    --color-accent: #7c3aed;
-    --color-accent-hover: #b9a2fc;
-    --color-accent-active: #9575f5;
-    --color-accent-soft: #1b1040;
-    --color-accent-alt: #332a5c;
 
     /* danger */
     --color-danger: #dc2626;
@@ -97,38 +90,7 @@
     }
 
     .btn-primary {
-        @apply bg-accent-soft rounded-lg px-3 py-1 text-text border-2 border-accent-alt;
-    }
-
-    /* secondary: outline, sits on any surface */
-    .btn-secondary {
-        background-color: transparent;
-        color: var(--color-text);
-        border: 1px solid var(--color-border);
-    }
-
-    .btn-secondary:hover {
-        background-color: var(--color-surface);
-        border-color: var(--color-border-strong);
-    }
-
-    .btn-secondary:active {
-        background-color: var(--color-surface-2);
-    }
-
-    /* ghost: no border, lowest emphasis */
-    .btn-ghost {
-        background-color: transparent;
-        color: var(--color-text-muted);
-    }
-
-    .btn-ghost:hover {
-        background-color: var(--color-surface);
-        color: var(--color-text);
-    }
-
-    .btn-ghost:active {
-        background-color: var(--color-surface-2);
+        @apply bg-surface rounded-lg px-3 py-1 text-text border-2 border-border;
     }
 
     /* danger: destructive actions */
@@ -206,59 +168,3 @@
         color: var(--color-text-muted);
     }
 }
-
-/*
-  React Flow theming.
-  Deliberately left outside any @layer: unlayered CSS always wins over
-  layer(base), so these override the library defaults regardless of
-  import order. Full variable reference:
-  https://reactflow.dev/learn/customization/theming
-*/
-.react-flow {
-    background-color: var(--color-bg);
-
-    /* edges */
-    --xy-edge-stroke-default: var(--color-border-strong);
-    --xy-edge-stroke-width-default: 1.5;
-    --xy-edge-stroke-selected-default: var(--color-accent);
-    --xy-connectionline-stroke-default: var(--color-accent);
-    --xy-connectionline-stroke-width-default: 2;
-
-    /* nodes */
-    --xy-node-color-default: var(--color-text);
-    --xy-node-border-default: 1px solid var(--color-border);
-    --xy-node-background-color-default: var(--color-surface);
-    --xy-node-group-background-color-default: color-mix(in srgb, var(--color-surface-2) 60%, transparent);
-    --xy-node-boxshadow-hover-default: 0 0 0 1px var(--color-border-strong);
-    --xy-node-boxshadow-selected-default: 0 0 0 1.5px var(--color-accent);
-
-    /* handles */
-    --xy-handle-background-color-default: var(--color-accent);
-    --xy-handle-border-color-default: var(--color-bg);
-
-    /* selection */
-    --xy-selection-background-color-default: color-mix(in srgb, var(--color-accent) 12%, transparent);
-    --xy-selection-border-default: 1px dotted var(--color-accent);
-
-    /* background pattern (dots / lines / cross) */
-    --xy-background-pattern-dots-color-default: var(--color-border);
-    --xy-background-pattern-lines-color-default: var(--color-border);
-    --xy-background-pattern-cross-color-default: var(--color-border-strong);
-
-    /* minimap */
-    --xy-minimap-background-color-default: var(--color-surface);
-
-    /* controls panel */
-    --xy-controls-button-background-color-default: var(--color-surface);
-    --xy-controls-button-background-color-hover-default: var(--color-surface-2);
-    --xy-controls-button-color-default: var(--color-text-muted);
-    --xy-controls-button-color-hover-default: var(--color-text);
-    --xy-controls-button-border-color-default: var(--color-border);
-    --xy-controls-box-shadow-default: 0 0 2px 1px rgba(0, 0, 0, 0.4);
-
-    /* misc */
-    --xy-attribution-background-color-default: color-mix(in srgb, var(--color-surface) 70%, transparent);
-    --xy-resize-background-color-default: var(--color-accent);
-}
-
-border
