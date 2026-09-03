@@ -1,36 +1,75 @@
---- 
-import { Icon } from 'astro-icon/components';
 ---
-<nav class="fixed z-10 top-2 left-2 right-2 bg-surface/50 border-border border-2 rounded-lg px-4 py-2 flex items-center justify-between backdrop-blur-sm">
+import "@fontsource/space-grotesk/600.css";
+import { Icon } from "astro-icon/components";
+---
 
-    <div>
-        <img src="/images/logo_placeholder.png" alt="Logo" class="h-8"/>
-    </div>
-    <div>
-        <ul class="flex space-x-4">
-            <li><a href="/" class="text-primary hover:text-primary-dark">Explorer</a></li>
-            <li><a href="/projects" class="text-primary hover:text-primary-dark">Projects</a></li>
-            <li><a href="/contact" class="text-primary hover:text-primary-dark">Contact</a></li>
-        </ul>
-    </div>
-    <div class="flex space-x-2 justify-center items-center">
-        <button class="social-media-btn" aria-label="LinkedIn">
-            <Icon class="icon" name="mdi:linkedin" />
-        </button>
-        <button class="social-media-btn" aria-label="GitHub">
-            <Icon class="icon" name="mdi:github" />
-        </button>
-        <button class="text-white px-4 py-2 flex gap-2 justify-center items-center rounded hover:bg-primary-dark">
-            Resume
-            <Icon class="icon inline-block" name="mdi:download-box" />
-        </button>
-    </div>
-
-</nav>
 <style>
-    @import "tailwindcss";
+    @reference "#global.css";
 
-    .social-media-btn, .social-media-btn .icon, .icon{
-        @apply w-6 h-6 justify-center items-center;
+    nav a {
+        @apply flex items-center justify-center text-base text-text-highlight transition-all hover:text-text hover:text-lg uppercase font-medium;
+    }
+
+    nav a.active {
+        @apply font-bold text-lg text-text;
     }
 </style>
+
+<aside
+    class="relative z-20 flex justify-between h-full w-[120px] shrink-0 flex-col border-r-2 border-border bg-bg/60 backdrop-blur-sm">
+    <a
+        href="/"
+        class="w-full flex justify-center"
+        aria-label="Home">
+        <img
+            src="/images/icon.png"
+            class="w-[40px] my-8"
+        />
+    </a>
+
+    <nav
+        class="absolute z-0 t-0 w-full flex flex-1 items-center justify-center flex-col h-full gap-10">
+        <a
+            href="/"
+            class="active">
+            Home
+        </a>
+        <a
+            href="/"
+            class="">
+            About
+        </a>
+        <a
+            href="/"
+            class="flex items-center justify-center text-text-highlight uppercase font-medium">
+            Projects
+        </a>
+        <a
+            href="/"
+            class="flex items-center justify-center text-text-highlight uppercase font-medium">
+            Contact
+        </a>
+    </nav>
+
+    <div
+        class="flex z-1 shrink-0 items-center justify-center gap-4 border-t-2 border-border py-5">
+        <a
+            href="https://www.linkedin.com/in/stiven-ilarraza-7865b8170/"
+            aria-label="LinkedIn"
+            class="w-6 h-6 flex items-center justify-center text-text transition-colors hover:text-text-faint">
+            <Icon
+                class="w-6 h-6 hover:w-7 hover:h-7 transition-all shrink-0"
+                name="mdi:linkedin"
+            />
+        </a>
+        <a
+            href="https://www.dropbox.com/scl/fi/1234567890/Curriculum_Vitae_Stiven_Illarraza.pdf?rlkey=1234567890abcdefg&dl=1"
+            aria-label="Curriculum Vitae"
+            class="w-6 h-6 flex items-center justify-center text-text transition-colors hover:text-text-faint">
+            <Icon
+                class="w-6 h-6 hover:w-7 hover:h-7 transition-all shrink-0"
+                name="mdi:file"
+            />
+        </a>
+    </div>
+</aside>
