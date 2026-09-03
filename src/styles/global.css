@@ -22,11 +22,11 @@
     --color-text-faint: #665c8f;
 
     /* accent (brand / primary actions) */
-    --color-accent: #a78bfa;
+    --color-accent: #7c3aed;
     --color-accent-hover: #b9a2fc;
     --color-accent-active: #9575f5;
-    --color-accent-soft: #2b2153;
-    --color-accent-alt: #f472b6;
+    --color-accent-soft: #1b1040;
+    --color-accent-alt: #332a5c;
 
     /* danger */
     --color-danger: #dc2626;
@@ -93,29 +93,11 @@
     /* ---------- buttons ---------- */
 
     .btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-40;
+        @apply inline-flex items-center justify-center text-text-highlight text-base font-medium transition-all cursor-pointer uppercase hover:scale-105 disabled:pointer-events-none disabled:opacity-40;
     }
 
-    .btn-sm {
-        @apply px-3 py-1.5 text-xs;
-    }
-
-    .btn-lg {
-        @apply px-5 py-2.5 text-base;
-    }
-
-    /* primary: filled accent, dark text (accent is light enough to need it) */
     .btn-primary {
-        background-color: var(--color-accent);
-        color: var(--color-bg);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--color-accent-hover);
-    }
-
-    .btn-primary:active {
-        background-color: var(--color-accent-active);
+        @apply bg-accent-soft rounded-lg px-3 py-1 text-text border-2 border-accent-alt;
     }
 
     /* secondary: outline, sits on any surface */

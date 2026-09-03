@@ -1,16 +1,31 @@
 ---
-import SchemaLayout from '../layouts/schema.astro';
-import DiagramExplorer from '../components/explorer/diagram-explorer';
-import ItemInspector from '../components/explorer/item-inspector.astro';
-import TreeExplorer from '../components/explorer/tree-explorer.astro';
+import Page from "../layouts/page.astro";
 ---
 
-<SchemaLayout title="Lead Software Engineer">
-    <div class="pt-20 flex justify-items-stretch h-dvh overflow-y-hidden">
-        <TreeExplorer/>
-        <div class="w-full min-h-0 flex justify-center items-center border-border border-2 rounded-lg m-2">
-            <DiagramExplorer client:load/>
+<Page>
+    <section
+        class="absolute inset-0 z-10 pl-[80px]"
+        aria-labelledby="hero-title">
+        <div class="flex h-full w-full items-center">
+            <div class="flex flex-col gap-8 ml-[8vw] max-w-[400px]">
+                <h1
+                    id="hero-title"
+                    class="font-display text-8xl font-medium uppercase leading-[0.82] tracking-[-0.065em]">
+                    <span class="block text-text"> Stiven </span>
+                    <span class="block text-text-highlight"> Ilarraza </span>
+                </h1>
+
+                <p class="text-sm">
+                    Software engineer with over 8 years of experience building
+                    products, systems, and digital experiences across the stack.
+                </p>
+
+                <div class="flex justify-between gap-4">
+                    <button class="btn btn-primary"> Get in Touch </button>
+
+                    <button class="btn"> See Projects </button>
+                </div>
+            </div>
         </div>
-        <ItemInspector/>
-    </div>
-</SchemaLayout>
+    </section>
+</Page>
