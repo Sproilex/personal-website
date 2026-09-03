@@ -1,0 +1,109 @@
+---
+import Page from "../layouts/page.astro";
+---
+
+<style>
+    @reference "#global.css";
+
+    .abilities li {
+        @apply flex gap-4;
+    }
+
+    .abilities h2 {
+        @apply text-2xl mb-2 leading-[1];
+    }
+
+    .abilities p {
+        @apply text-base text-text-muted;
+    }
+
+    .abilities span {
+        @apply text-sm text-text-highlight;
+    }
+</style>
+
+<Page>
+    <div class="flex h-full w-full ml-[4vw] gap-4">
+        <section
+            class="w-[60%]"
+            aria-labelledby="about-stiven">
+            <div class="flex h-full w-full items-center">
+                <div class="flex flex-col gap-8">
+                    <h1
+                        class="font-display text-base text-text-highlight uppercase">
+                        About
+                    </h1>
+
+                    <p
+                        class="text-5xl weight-medium leading-[1.2] tracking-[-0.04em] text-text">
+                        I build software that has to <span
+                            class="text-text-highlight">
+                            survive contact with real users
+                        </span>. Eight years of shipping products end to end,
+                        from schema and API to the pixels people actually touch.
+                    </p>
+
+                    <div class="flex gap-8">
+                        <button class="btn btn-primary"> Get in Touch </button>
+
+                        <button class="btn"> See Projects </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section
+            aria-labelledby="abilities"
+            class="abilities flex justify-center items-center w-[40%]">
+            <ul class="flex flex-col gap-12">
+                <li>
+                    <span>01</span>
+                    <div>
+                        <h2>Product engineering</h2>
+                        <p>
+                            Features shipped whole — interface, service,
+                            migration, metrics.
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <span>02</span>
+                    <div>
+                        <h2>Front-end systems</h2>
+                        <p>
+                            React and TypeScript at scale, with design systems
+                            that stay usable.
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <span>03</span>
+                    <div>
+                        <h2>APIs & data</h2>
+                        <p>
+                            Node and Python services over PostgreSQL; contracts
+                            before code.
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <span>04</span>
+                    <div>
+                        <h2>Cloud & delivery</h2>
+                        <p>
+                            AWS, containers, CI — boring releases as a feature.
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <span>05</span>
+                    <div>
+                        <h2>Mentoring</h2>
+                        <p>
+                            Reviews, pairing and docs that outlive the sprint.
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+</Page>
