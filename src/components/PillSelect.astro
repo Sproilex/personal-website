@@ -1,0 +1,54 @@
+---
+interface Option {
+    label: string;
+    value: string;
+}
+
+interface Props {
+    name: string;
+    options: Option[];
+    defaultValue?: string;
+}
+
+const { name, options, defaultValue } = Astro.props;
+---
+
+<style>
+    @reference "#global.css";
+
+    .pill-select {
+        @apply flex flex-row flex-wrap gap-2;
+    }
+
+    .pill-select input[type="radio"] {
+        @apply sr-only;
+    }
+
+    .pill-select label {
+        @apply px-3 py-1.5 rounded-md border-2 border-border text-sm text-text-muted
+               bg-bg cursor-pointer select-none transition-all;
+    }
+
+    .pill-select label:hover {
+        @apply border-text-highlight text-text;
+    }
+
+    .pill-select input[type="radio"]:checked + label {
+        @apply border-text-highlight text-text bg-text-highlight/10;
+    }
+</style>
+
+<div class="pill-select">
+    {options.map((opt) => (
+        <>
+            <input
+                type="radio"
+                name={name}
+                id={`${name}-${opt.value}`}
+                value={opt.value}
+                checked={opt.value === defaultValue}
+            />
+            <label for={`${name}-${opt.value}`}>{opt.label}</label>
+        </>
+    ))}
+</div>

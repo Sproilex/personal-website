@@ -1,6 +1,7 @@
 ---
 import Page from "../layouts/page.astro";
 import { Icon } from "astro-icon/components";
+import PillSelect from "../components/PillSelect.astro";
 ---
 
 <style>
@@ -26,26 +27,6 @@ import { Icon } from "astro-icon/components";
         @apply w-full bg-bg border-2 border-border rounded-md p-2 text-text;
     }
 
-    .form-step .need-options {
-        @apply flex flex-row justify-start flex-wrap gap-2 mt-1;
-    }
-
-    .need-options input[type="radio"] {
-        @apply sr-only;
-    }
-
-    .need-options label {
-        @apply px-3 py-1.5 rounded-md border-2 border-border text-sm text-text-muted
-               bg-bg cursor-pointer select-none transition-all mb-0 w-fit;
-    }
-
-    .need-options label:hover {
-        @apply border-text-highlight text-text;
-    }
-
-    .need-options input[type="radio"]:checked + label {
-        @apply border-text-highlight text-text bg-text-highlight/10;
-    }
 </style>
 
 <Page>
@@ -125,38 +106,15 @@ import { Icon } from "astro-icon/components";
                     <span>03</span>
                     <div>
                         <label>What do you need?</label>
-                        <div class="need-options">
-                            <input
-                                type="radio"
-                                name="needs"
-                                id="need-product"
-                                value="product-build"
-                            />
-                            <label for="need-product">Product build</label>
-                            <input
-                                type="radio"
-                                name="needs"
-                                id="need-platform"
-                                value="platform-api"
-                            />
-                            <label for="need-platform"
-                                >Platform / API work</label
-                            >
-                            <input
-                                type="radio"
-                                name="needs"
-                                id="need-consulting"
-                                value="consulting"
-                            />
-                            <label for="need-consulting">Consulting</label>
-                            <input
-                                type="radio"
-                                name="needs"
-                                id="need-role"
-                                value="full-time-role"
-                            />
-                            <label for="need-role">Full-time role</label>
-                        </div>
+                        <PillSelect
+                            name="needs"
+                            options={[
+                                { label: "Product build", value: "product-build" },
+                                { label: "Platform / API work", value: "platform-api" },
+                                { label: "Consulting", value: "consulting" },
+                                { label: "Full-time role", value: "full-time-role" },
+                            ]}
+                        />
                     </div>
                 </div>
                 <div class="form-step">
