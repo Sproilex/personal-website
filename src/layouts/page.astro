@@ -1,0 +1,54 @@
+---
+import "../styles/global.css";
+import "@fontsource/space-grotesk/600.css";
+import Navbar from "../components/Navbar.astro";
+---
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width"
+        />
+        <meta
+            name="description"
+            content="Stiven Ilarraza — Software Engineer"
+        />
+        <title>Stiven Ilarraza — Software Engineer</title>
+    </head>
+
+    <body class="m-0 h-dvh overflow-hidden bg-bg text-text">
+        <main class="relative h-dvh w-full overflow-hidden">
+            <!-- ============================================================
+           STAR FIELD
+           ============================================================ -->
+
+            <div
+                id="stars"
+                class="pointer-events-none absolute inset-0 z-0 h-full w-full"
+                aria-hidden="true">
+            </div>
+
+            <!-- ============================================================
+           BACKGROUND ATMOSPHERE
+           ============================================================ -->
+
+            <div
+                class="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_70%_50%,color-mix(in_srgb,var(--color-accent)_7%,transparent),transparent_35%)]"
+                aria-hidden="true">
+            </div>
+
+            <Navbar />
+            <slot />
+        </main>
+
+        <!-- ==============================================================
+         PARTICLES
+         ============================================================== -->
+
+        <script>
+            import "../scripts/stars";
+        </script>
+    </body>
+</html>
