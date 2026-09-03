@@ -1,6 +1,6 @@
 ---
-title: S.A.R.A.
-description: B2B platform for the remodeling and real estate industry, leading architecture, product development, integrations, delivery, and team growth.
+title: MakeIt Tool
+description: Unified SEO intelligence platform consolidating five tools into one real-time dashboard.
 role: Lead Software Engineer & Technical Lead
 type: Full Time
 company: Confidential B2B
@@ -33,7 +33,7 @@ tags:
 year: "2025"
 start_date: 11/2025
 end_date: 07/2026
-image: "SARA - Hero.jpg"
+image: "MakeIt - Hero.jpg"
 ---
 I joined the project as the lead developer and built a B2B platform for the remodeling and real estate industry from the ground up. I took charge of the technical setup, product development, third-party integrations, delivery, and support.
 

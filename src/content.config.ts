@@ -10,8 +10,12 @@ const projects = defineCollection({
         role: z.string(),
         company: z.string(),
         type: z.string(),
+        category: z.string().optional(),
+        year: z.string().optional(),
         tags: z.string().array(),
         technologies: z.string().array(),
+        image: z.string().optional(),
+        caseStudyUrl: z.string().optional(),
     }),
 });
 

@@ -1,0 +1,95 @@
+---
+import Page from "../layouts/page.astro";
+import PillSelect from "../components/PillSelect.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { getCollection } from "astro:content";
+
+const projects = await getCollection("projects");
+---
+
+<style>
+    @reference "#global.css";
+
+    .abilities li {
+        @apply flex gap-4;
+    }
+
+    .abilities h2 {
+        @apply text-2xl mb-2 leading-[1];
+    }
+
+    .abilities p {
+        @apply text-base text-text-muted;
+    }
+
+    .abilities span {
+        @apply text-sm text-text-highlight;
+    }
+</style>
+
+<Page>
+    <section
+        class="flex flex-col h-full w-full ml-[4vw] gap-8 pt-24 overflow-hidden"
+        aria-labelledby="about-stiven">
+        <h1
+            id="hero-title"
+            class="font-display text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em] shrink-0">
+            <span class="block text-text"> Selected </span>
+            <span class="block text-text-highlight"> Work </span>
+        </h1>
+
+        <PillSelect
+            name="filter"
+            defaultValue="all"
+            options={[
+                { label: "All", value: "all" },
+                { label: "Product", value: "product" },
+                { label: "Platform", value: "platform" },
+                { label: "Data", value: "data" },
+            ]}
+        />
+
+        <div
+            class="grid grid-cols-3 auto-rows-max gap-4 overflow-y-auto flex-1 pb-8">
+            {
+                projects.map((p) => (
+                    <ProjectCard
+                        title={p.data.title}
+                        year={p.data.year}
+                        description={p.data.description}
+                        category={p.data.category}
+                        technologies={p.data.technologies}
+                        image={p.data.image}
+                        caseStudyUrl={p.data.caseStudyUrl}
+                    />
+                ))
+            }
+            {
+                projects.map((p) => (
+                    <ProjectCard
+                        title={p.data.title}
+                        year={p.data.year}
+                        description={p.data.description}
+                        category={p.data.category}
+                        technologies={p.data.technologies}
+                        image={p.data.image}
+                        caseStudyUrl={p.data.caseStudyUrl}
+                    />
+                ))
+            }
+            {
+                projects.map((p) => (
+                    <ProjectCard
+                        title={p.data.title}
+                        year={p.data.year}
+                        description={p.data.description}
+                        category={p.data.category}
+                        technologies={p.data.technologies}
+                        image={p.data.image}
+                        caseStudyUrl={p.data.caseStudyUrl}
+                    />
+                ))
+            }
+        </div>
+    </section>
+</Page>
