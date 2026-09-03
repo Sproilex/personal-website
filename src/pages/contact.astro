@@ -1,0 +1,187 @@
+---
+import Page from "../layouts/page.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<style>
+    @reference "#global.css";
+
+    .form-step {
+        @apply flex gap-4 w-full justify-start items-start;
+    }
+
+    .form-step div {
+        @apply flex flex-col justify-center w-full;
+    }
+
+    .form-step span {
+        @apply text-sm text-text-highlight;
+    }
+
+    form label {
+        @apply text-xl mb-2 leading-[1.1];
+    }
+
+    form input:not([type="radio"]) {
+        @apply w-full bg-bg border-2 border-border rounded-md p-2 text-text;
+    }
+
+    .form-step .need-options {
+        @apply flex flex-row justify-start flex-wrap gap-2 mt-1;
+    }
+
+    .need-options input[type="radio"] {
+        @apply sr-only;
+    }
+
+    .need-options label {
+        @apply px-3 py-1.5 rounded-md border-2 border-border text-sm text-text-muted
+               bg-bg cursor-pointer select-none transition-all mb-0 w-fit;
+    }
+
+    .need-options label:hover {
+        @apply border-text-highlight text-text;
+    }
+
+    .need-options input[type="radio"]:checked + label {
+        @apply border-text-highlight text-text bg-text-highlight/10;
+    }
+</style>
+
+<Page>
+    <div class="flex h-full w-full ml-[4vw] gap-8">
+        <section
+            class="w-[60%]"
+            aria-labelledby="about-stiven">
+            <div class="flex h-full w-full items-center">
+                <div class="flex flex-col gap-8">
+                    <h1
+                        class="font-display text-base text-text-highlight uppercase">
+                        Contact
+                    </h1>
+
+                    <p
+                        class="text-5xl weight-medium leading-[1.2] tracking-[-0.04em] text-text">
+                        Got a product to build, a system to untangle, or a role
+                        to fill? <span class="text-text-highlight"
+                            >Start the conversation here</span
+                        >. I read everything and reply within a day.
+                    </p>
+
+                    <ul class="flex gap-12">
+                        <li>
+                            <a
+                                href="https://www.linkedin.com/in/stivenilarraza/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex justify-center items-center gap-2 text-text-muted hover:text-text transition-colors"
+                                ><Icon
+                                    class="w-5 h-5 transition-all shrink-0"
+                                    name="mdi:linkedin"
+                                /> Linkedin</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.linkedin.com/in/stivenilarraza/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex justify-center items-center gap-2 text-text-muted hover:text-text transition-colors"
+                                ><Icon
+                                    class="w-5 h-5 transition-all shrink-0"
+                                    name="mdi:file"
+                                /> Resume</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section
+            aria-labelledby="abilities"
+            class="abilities flex justify-center items-center w-[40%]">
+            <form class="flex flex-col gap-8 w-full">
+                <div class="form-step">
+                    <span>01</span>
+                    <div>
+                        <label>Your Name</label>
+                        <input
+                            type="text"
+                            placeholder="Jane Doe"
+                        />
+                    </div>
+                </div>
+                <div class="form-step">
+                    <span>02</span>
+                    <div>
+                        <label>Email</label>
+                        <input
+                            type="email"
+                            placeholder="jane.doe@example.com"
+                        />
+                    </div>
+                </div>
+                <div class="form-step">
+                    <span>03</span>
+                    <div>
+                        <label>What do you need?</label>
+                        <div class="need-options">
+                            <input
+                                type="radio"
+                                name="needs"
+                                id="need-product"
+                                value="product-build"
+                            />
+                            <label for="need-product">Product build</label>
+                            <input
+                                type="radio"
+                                name="needs"
+                                id="need-platform"
+                                value="platform-api"
+                            />
+                            <label for="need-platform"
+                                >Platform / API work</label
+                            >
+                            <input
+                                type="radio"
+                                name="needs"
+                                id="need-consulting"
+                                value="consulting"
+                            />
+                            <label for="need-consulting">Consulting</label>
+                            <input
+                                type="radio"
+                                name="needs"
+                                id="need-role"
+                                value="full-time-role"
+                            />
+                            <label for="need-role">Full-time role</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-step">
+                    <span>04</span>
+                    <div>
+                        <label>Message</label>
+                        <textarea
+                            placeholder="Write your message here..."
+                            class="w-full bg-bg border-2 border-border rounded-md p-2 text-text h-[150px]"
+                        ></textarea>
+                    </div>
+                </div>
+                <div
+                    class="flex items-center items-center justify-between pl-8">
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+                        Send Message
+                    </button>
+
+                    <span class="align-middle">
+                        Usually answered within 24 hours
+                    </span>
+                </div>
+            </form>
+        </section>
+    </div>
+</Page>
