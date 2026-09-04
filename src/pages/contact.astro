@@ -26,11 +26,10 @@ import PillSelect from "../components/PillSelect.astro";
     form input:not([type="radio"]) {
         @apply w-full bg-bg border-2 border-border rounded-md p-2 text-text;
     }
-
 </style>
 
 <Page>
-    <div class="flex h-full w-full ml-[4vw] gap-8">
+    <div class="flex h-full w-full ml-[4vw] gap-8 pr-[120px]">
         <section
             class="w-[60%]"
             aria-labelledby="about-stiven">
@@ -109,10 +108,19 @@ import PillSelect from "../components/PillSelect.astro";
                         <PillSelect
                             name="needs"
                             options={[
-                                { label: "Product build", value: "product-build" },
-                                { label: "Platform / API work", value: "platform-api" },
+                                {
+                                    label: "Product build",
+                                    value: "product-build",
+                                },
+                                {
+                                    label: "Platform / API work",
+                                    value: "platform-api",
+                                },
                                 { label: "Consulting", value: "consulting" },
-                                { label: "Full-time role", value: "full-time-role" },
+                                {
+                                    label: "Full-time role",
+                                    value: "full-time-role",
+                                },
                             ]}
                         />
                     </div>

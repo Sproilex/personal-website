@@ -29,7 +29,7 @@ const projects = await getCollection("projects");
 
 <Page>
     <section
-        class="flex flex-col h-full w-full ml-[4vw] gap-8 pt-24 overflow-hidden"
+        class="flex flex-col h-full w-full ml-[4vw] mr-[4vw] gap-8 pt-24 overflow-y-auto scrollbar-thin scrollbar-thumb-text-highlight scrollbar-track-surface"
         aria-labelledby="about-stiven">
         <h1
             id="hero-title"
@@ -49,34 +49,7 @@ const projects = await getCollection("projects");
             ]}
         />
 
-        <div
-            class="grid grid-cols-3 auto-rows-max gap-4 overflow-y-auto flex-1 pb-8">
-            {
-                projects.map((p) => (
-                    <ProjectCard
-                        title={p.data.title}
-                        year={p.data.year}
-                        description={p.data.description}
-                        category={p.data.category}
-                        technologies={p.data.technologies}
-                        image={p.data.image}
-                        caseStudyUrl={p.data.caseStudyUrl}
-                    />
-                ))
-            }
-            {
-                projects.map((p) => (
-                    <ProjectCard
-                        title={p.data.title}
-                        year={p.data.year}
-                        description={p.data.description}
-                        category={p.data.category}
-                        technologies={p.data.technologies}
-                        image={p.data.image}
-                        caseStudyUrl={p.data.caseStudyUrl}
-                    />
-                ))
-            }
+        <div class="grid grid-cols-3 auto-rows-max gap-4 flex-1 pb-8">
             {
                 projects.map((p) => (
                     <ProjectCard
