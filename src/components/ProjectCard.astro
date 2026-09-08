@@ -20,8 +20,9 @@ const {
 } = Astro.props;
 ---
 
-<article class="rounded-lg border border-border overflow-hidden flex flex-col">
-    <div class="relative h-64 shrink-0 bg-bg-secondary overflow-hidden">
+<article
+    class="min-w-[300px] w-100% rounded-lg border border-border overflow-hidden flex flex-col transition-all duration-300 hover:cursor-pointer hover:-translate-y-2">
+    <div class="relative h-fit shrink-0 bg-bg-secondary overflow-hidden">
         {
             image && (
                 <img
@@ -45,28 +46,23 @@ const {
     <div class="flex flex-col gap-4 p-6 bg-bg flex-1">
         <div class="flex items-baseline justify-between gap-4">
             <h3 class="text-2xl font-medium text-text">{title}</h3>
-            {
-                year && (
-                    <span class="text-text-muted text-sm shrink-0">{year}</span>
-                )
-            }
         </div>
 
         <p class="text-text-muted text-base leading-relaxed">{description}</p>
 
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-1">
             {
                 technologies
                     .slice(0, 4)
                     .map((tech) => (
-                        <span class="px-3 py-1.5 rounded-md border border-border text-sm text-text-muted bg-bg">
+                        <span class="px-2 py-1 rounded-md border border-border text-xs text-text-muted bg-bg">
                             {tech}
                         </span>
                     ))
             }
             {
                 technologies.length > 4 && (
-                    <span class="px-3 py-1.5 rounded-md border border-border text-sm text-text-muted bg-bg">
+                    <span class="px-2 py-1 rounded-md border border-border text-sm text-text-muted bg-bg">
                         +{technologies.length - 4}
                     </span>
                 )

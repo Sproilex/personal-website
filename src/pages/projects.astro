@@ -25,11 +25,15 @@ const projects = await getCollection("projects");
     .abilities span {
         @apply text-sm text-text-highlight;
     }
+
+    .projects-grid {
+        @apply grid auto-rows-max gap-4 flex-1 pb-8 -mt-8 pt-8 overflow-y-auto pr-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))];
+    }
 </style>
 
 <Page>
     <section
-        class="flex flex-col h-full w-full ml-[4vw] mr-[4vw] gap-8 pt-24 overflow-y-auto scrollbar-thin scrollbar-thumb-text-highlight scrollbar-track-surface"
+        class="flex flex-col h-full w-full pl-[4vw] pr-[4vw] gap-8 pt-24"
         aria-labelledby="about-stiven">
         <h1
             id="hero-title"
@@ -49,7 +53,7 @@ const projects = await getCollection("projects");
             ]}
         />
 
-        <div class="grid grid-cols-3 auto-rows-max gap-4 flex-1 pb-8">
+        <div class="projects-grid">
             {
                 projects.map((p) => (
                     <ProjectCard

@@ -1,6 +1,6 @@
 ---
 title: MakeIt Tool
-description: Unified SEO intelligence platform consolidating five tools into one real-time dashboard.
+description: Realtime SEO intelligence platform dashboard.
 role: Lead Software Engineer & Technical Lead
 type: Full Time
 company: Confidential B2B

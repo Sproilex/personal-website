@@ -1,6 +1,6 @@
 ---
 title: S.A.R.A.
-description: B2B platform for the remodeling and real estate industry, leading architecture, product development, integrations, delivery, and team growth.
+description: B2B platform for the remodeling and real estate industry.
 role: Lead Software Engineer & Technical Lead
 type: Full Time
 company: Confidential B2B
