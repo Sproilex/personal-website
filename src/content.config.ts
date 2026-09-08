@@ -15,7 +15,14 @@ const projects = defineCollection({
         tags: z.string().array(),
         technologies: z.string().array(),
         image: z.string().optional(),
-        caseStudyUrl: z.string().optional(),
+        slug: z.string().optional(),
+        styledTitle: z.string().optional(),
+        team: z.string().optional(),
+        problem: z.string().optional(),
+        outcome: z.string().optional(),
+        impact: z.string().optional(),
+        mockupUrl: z.string().optional(),
+        liveUrl: z.string().optional(),
     }),
 });
 

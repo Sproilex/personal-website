@@ -1,7 +1,7 @@
 ---
-import Page from "../layouts/page.astro";
-import PillSelect from "../components/PillSelect.astro";
-import ProjectCard from "../components/ProjectCard.astro";
+import Page from "../../layouts/page.astro";
+import PillSelect from "../../components/PillSelect.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
@@ -63,7 +63,9 @@ const projects = await getCollection("projects");
                         category={p.data.category}
                         technologies={p.data.technologies}
                         image={p.data.image}
-                        caseStudyUrl={p.data.caseStudyUrl}
+                        caseStudyUrl={
+                            p.data.slug ? `/projects/${p.data.slug}` : "#"
+                        }
                     />
                 ))
             }

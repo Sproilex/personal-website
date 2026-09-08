@@ -34,21 +34,47 @@ year: "2025"
 start_date: 11/2025
 end_date: 07/2026
 image: "SARA - Hero.jpg"
+slug: "sara"
+styledTitle: "S<span class='text-text-highlight'>.</span>A<span class='text-text-highlight'>.</span>R<span class='text-text-highlight'>.</span>A<span class='text-text-highlight'>.</span>"
+team: "4 engineers · 1 designer"
+problem: "Fragmented operational workflows required repetitive manual work across disconnected tools."
+outcome: "A centralized platform for automating operational workflows across the business."
+impact: "Reduced manual human intervention by 40% to 60% across key processes."
 ---
-I joined the project as the lead developer and built a B2B platform for the remodeling and real estate industry from the ground up. I took charge of the technical setup, product development, third-party integrations, delivery, and support.
 
-I scaled the initial application into a production platform that served real customers while expanding and coordinating the development team. I led technical execution, set development priorities, made architectural decisions, and managed product delivery.
+<div class="flex flex-col gap-16">
+<div class="grid grid-cols-2 gap-16 items-start">
+  <div>
+    <h2>The brief</h2>
+    <p>The company was running its entire remodeling and real estate operation across a patchwork of spreadsheets, email threads and disconnected SaaS tools. Sales, financing, document signing and customer communications each lived in a separate place. Every handoff between departments meant someone copying data by hand, and errors compounded across the pipeline.</p>
+    <p>I joined as lead engineer to build the platform from scratch. The goal wasn't just to digitise the existing process — it was to redesign the workflow so the business could scale without adding headcount to manage the chaos.</p>
+  </div>
+  <div class="flex flex-col gap-3 mt-12">
+    <div class="border border-dashed border-border rounded-lg aspect-video flex flex-col items-center justify-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-border" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <p class="text-sm text-center !mb-0">Drop a UI shot — AI Featured CRM</p>
+    </div>
+    <p class="text-xs text-text-muted !mb-0">Handle all your data easily.</p>
+  </div>
+</div>
 
-I designed and developed a distributed system of interconnected applications and services, including:
+<div class="grid grid-cols-2 gap-16 items-start">
+  <div class="flex flex-col gap-3">
+    <div class="border border-dashed border-border rounded-lg aspect-video flex flex-col items-center justify-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-border" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <p class="text-sm text-center !mb-0">Drop a detail shot — financing flow or supplier table</p>
+    </div>
+    <p class="text-xs text-text-muted !mb-0">Dispatch auto-assign across 15+ financing lenders.</p>
+  </div>
+  <div>
+    <h2>Building it</h2>
+    <p>The foundation was a Domain-Driven Design API that modelled the core business entities — projects, contractors, clients, financing applications — as a single source of truth. On top of that I built a headless n8n automation layer responsible for all background processing: document generation, financing submissions to 15+ lenders, CRM sync and AI-powered communication workflows.</p>
+    <p>The hardest part wasn't the integrations — it was sequencing the migration. The business couldn't stop operating while we rebuilt, so each module went live incrementally, replacing one manual process at a time. By the end, manual intervention on the critical financing and document pipeline dropped by 40 to 60 percent.</p>
+  </div>
+</div>
 
-- An initial monolithic application that served as the main entry point for customers. This was later evolved and migrated into the new system setup.
-- A central API that served as the main source of business logic and system data, designed using Domain-Driven Design (DDD) principles.
-- A React-based web application that supported user features and operational workflows.
-- Designed and operated a headless n8n automation service responsible for background processing, event-driven workflows, third-party integrations, data orchestration, and user-facing operational automations.
-- An API layer that supported AI agents and smart automation services.
-
-I led the implementation of integrations with various third-party platforms, such as QuickBooks, JustCall, Google Drive, DocuSign, ElevenLabs, CRM systems,  AI-powered services and 15+ financing lenders, handling data synchronization, automated processing, external events, and cross-service workflows.
-
-I developed automation workflows for financing applications, document generation, customer communications, CRM events, custom AI agents, data extraction, and other operational tasks.
-
-Core technologies included Node.js, TypeScript, React, REST APIs, MySQL, MongoDB, n8n, Cloudflare, AWS, AI integrations, workflow automation, web scraping, and distributed systems.
+</div>

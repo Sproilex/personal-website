@@ -1,0 +1,228 @@
+---
+import Page from "../../layouts/page.astro";
+import { Icon } from "astro-icon/components";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+    const projects = await getCollection("projects");
+    return projects.map((entry, i) => ({
+        params: { project: entry.data.slug ?? entry.id },
+        props: { entry, next: projects[(i + 1) % projects.length] },
+    }));
+}
+
+const { entry, next } = Astro.props;
+const { Content } = await render(entry);
+
+const {
+    styledTitle,
+    title,
+    description,
+    role,
+    year,
+    team,
+    technologies,
+    problem,
+    outcome,
+    impact,
+    mockupUrl,
+    liveUrl,
+} = entry.data;
+
+const stack = technologies.slice(0, 4).join(" · ");
+const nextSlug = next.data.slug ?? next.id;
+---
+
+<style>
+    @reference "#global.css";
+
+    .meta-row {
+        @apply flex justify-between items-baseline py-4 border-b border-border gap-8;
+    }
+
+    .meta-label {
+        @apply text-xs font-display tracking-widest uppercase text-text-muted shrink-0;
+    }
+
+    .meta-value {
+        @apply text-sm text-text text-right;
+    }
+
+    .summary-card {
+        @apply flex flex-col gap-3 p-5 rounded-lg border border-border bg-bg;
+    }
+
+    .summary-card-label {
+        @apply text-xs font-display tracking-widest uppercase text-text-highlight;
+    }
+
+    .prose :global(h2) {
+        @apply text-3xl font-medium text-text mb-4 leading-tight;
+    }
+
+    .prose :global(h3) {
+        @apply text-xl font-medium text-text mt-8 mb-3;
+    }
+
+    .prose :global(p) {
+        @apply text-text-muted leading-relaxed mb-4;
+    }
+
+    .prose :global(ul) {
+        @apply list-disc pl-6 text-text-muted space-y-2 mb-4;
+    }
+
+    .prose :global(img) {
+        @apply w-full rounded-lg border border-border my-8;
+    }
+</style>
+
+<Page>
+    <section class="flex flex-col h-full w-full overflow-y-auto">
+        <div class="flex flex-col gap-16 px-[4vw] pt-12">
+            <!-- HERO -->
+            <div class="flex gap-16 items-center">
+                <!-- Left -->
+                <div class="flex flex-col gap-8 w-1/2">
+                    <a
+                        href="/projects"
+                        class="flex items-center gap-2 text-xs font-display tracking-widest uppercase text-text-muted hover:text-text transition-colors w-fit">
+                        ← All Projects
+                    </a>
+
+                    <h1
+                        class="font-display text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em]"
+                        set:html={styledTitle ?? title}
+                    />
+
+                    <p
+                        class="text-lg text-text-muted leading-relaxed max-w-prose">
+                        {description}
+                    </p>
+
+                    <div class="flex items-center gap-6">
+                        {
+                            mockupUrl && (
+                                <a
+                                    href={mockupUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-primary flex items-center gap-2">
+                                    <Icon
+                                        name="mdi:file-pdf-box"
+                                        class="w-4 h-4"
+                                    />
+                                    View Mockup (PDF)
+                                </a>
+                            )
+                        }
+                        {
+                            liveUrl && (
+                                <a
+                                    href={liveUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-sm font-display tracking-widest uppercase text-text-muted hover:text-text transition-colors">
+                                    Visit Live Site
+                                </a>
+                            )
+                        }
+                    </div>
+                </div>
+
+                <!-- Right: meta -->
+                <div class="w-1/2">
+                    <div class="meta-row">
+                        <span class="meta-label">Role</span>
+                        <span class="meta-value">{role}</span>
+                    </div>
+                    {
+                        year && (
+                            <div class="meta-row">
+                                <span class="meta-label">Year</span>
+                                <span class="meta-value">{year}</span>
+                            </div>
+                        )
+                    }
+                    {
+                        team && (
+                            <div class="meta-row">
+                                <span class="meta-label">Team</span>
+                                <span class="meta-value">{team}</span>
+                            </div>
+                        )
+                    }
+                    <div class="meta-row border-b-0">
+                        <span class="meta-label">Stack</span>
+                        <span class="meta-value">{stack}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUMMARY CARDS -->
+            <div class="grid grid-cols-4 gap-4">
+                {
+                    problem && (
+                        <div class="summary-card">
+                            <span class="summary-card-label">Problem</span>
+                            <p class="text-sm text-text-muted leading-relaxed">
+                                {problem}
+                            </p>
+                        </div>
+                    )
+                }
+                <div class="summary-card">
+                    <span class="summary-card-label">Role</span>
+                    <p class="text-sm text-text-muted leading-relaxed">
+                        {role}
+                    </p>
+                </div>
+                {
+                    outcome && (
+                        <div class="summary-card">
+                            <span class="summary-card-label">Outcome</span>
+                            <p class="text-sm text-text-muted leading-relaxed">
+                                {outcome}
+                            </p>
+                        </div>
+                    )
+                }
+                {
+                    impact && (
+                        <div class="summary-card">
+                            <span class="summary-card-label">Impact</span>
+                            <p class="text-sm text-text-muted leading-relaxed">
+                                {impact}
+                            </p>
+                        </div>
+                    )
+                }
+            </div>
+
+            <!-- MD BODY -->
+            <div class="prose max-w-none">
+                <Content />
+            </div>
+
+            <!-- FOOTER CTA -->
+            <div
+                class="flex items-center justify-between border-t border-border py-10 mb-8">
+                <p class="text-text-muted">
+                    Want the long version, or something similar built?
+                </p>
+                <div class="flex items-center gap-6">
+                    <a
+                        href="/contact"
+                        class="btn btn-primary">
+                        Get in Touch
+                    </a>
+                    <a
+                        href={`/projects/${nextSlug}`}
+                        class="text-sm font-display tracking-widest uppercase text-text-muted hover:text-text transition-colors">
+                        · Next Project →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</Page>
