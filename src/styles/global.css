@@ -82,6 +82,62 @@
     }
 }
 
+/* ------------------------------------------------------------------ */
+/* SPACE TRAVEL KEYFRAMES                                               */
+/* ------------------------------------------------------------------ */
+
+@keyframes space-exit-tl {
+    from { opacity: 1; transform: scale(1) translate(0, 0); }
+    to   { opacity: 0; transform: scale(0.75) translate(200vw, 200vh); }
+}
+@keyframes space-entry-tl {
+    from { opacity: 0; transform: scale(0.75) translate(-200vw, -200vh); }
+    to   { opacity: 1; transform: scale(1) translate(0, 0); }
+}
+
+@keyframes space-exit-tr {
+    from { opacity: 1; transform: scale(1) translate(0, 0); }
+    to   { opacity: 0; transform: scale(0.75) translate(200vw, 200vh); }
+}
+@keyframes space-entry-tr {
+    from { opacity: 0; transform: scale(0.75) translate(100vw, -200vh); }
+    to   { opacity: 1; transform: scale(1) translate(0, 0); }
+}
+
+@keyframes space-exit-br {
+    from { opacity: 1; transform: scale(1) translate(0, 0); }
+    to   { opacity: 0; transform: scale(0.75) translate(-200vw, -200vh); }
+}
+@keyframes space-entry-br {
+    from { opacity: 0; transform: scale(0.75) translate(200vw, 200vh); }
+    to   { opacity: 1; transform: scale(1) translate(0, 0); }
+}
+
+@keyframes space-exit-bl {
+    from { opacity: 1; transform: scale(1) translate(0, 0); }
+    to   { opacity: 0; transform: scale(0.1) translate(200vw, -200vh); }
+}
+@keyframes space-entry-bl {
+    from { opacity: 0; transform: scale(0.1) translate(-200vw, 200vh); }
+    to   { opacity: 1; transform: scale(1) translate(0, 0); }
+}
+
+@keyframes space-exit-down {
+    from { opacity: 1; transform: scale(1) translate(0, 0); }
+    to   { opacity: 0; transform: scale(0.1) translate(0, -200vh); }
+}
+@keyframes space-entry-down {
+    from { opacity: 0; transform: scale(0.1) translate(0, 200vh); }
+    to   { opacity: 1; transform: scale(1) translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(page-content),
+    ::view-transition-new(page-content) {
+        animation: none !important;
+    }
+}
+
 @layer components {
     /* ---------- buttons ---------- */
 

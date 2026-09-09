@@ -2,6 +2,7 @@
 import Page from "../layouts/page.astro";
 import { Icon } from "astro-icon/components";
 import PillSelect from "../components/PillSelect.astro";
+import { contactTransition } from "../transitions";
 ---
 
 <style>
@@ -29,7 +30,10 @@ import PillSelect from "../components/PillSelect.astro";
 </style>
 
 <Page>
-    <div class="flex h-full w-full ml-[4vw] gap-8 pr-[120px]">
+    <div
+        class="flex h-full w-full ml-[4vw] gap-8 pr-[120px]"
+        transition:name="page-content"
+        transition:animate={contactTransition}>
         <section
             class="w-[60%]"
             aria-labelledby="about-stiven">

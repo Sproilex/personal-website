@@ -2,6 +2,7 @@
 import Page from "../../layouts/page.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection, render } from "astro:content";
+import { detailTransition } from "../../transitions";
 
 export async function getStaticPaths() {
     const projects = await getCollection("projects");
@@ -80,7 +81,10 @@ const stack = technologies.slice(0, 4).join(" · ");
 </style>
 
 <Page>
-    <section class="flex flex-col h-full w-full overflow-y-auto">
+    <section
+        class="flex flex-col h-full w-full overflow-y-auto"
+        transition:name="page-content"
+        transition:animate={detailTransition}>
         <div class="flex flex-col gap-16 px-[4vw] pt-12">
             <!-- HERO -->
             <div class="flex gap-16 items-start">

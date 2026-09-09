@@ -3,6 +3,7 @@ import Page from "../../layouts/page.astro";
 import PillSelect from "../../components/PillSelect.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
+import { projectsTransition } from "../../transitions";
 
 const projects = await getCollection("projects");
 ---
@@ -34,7 +35,9 @@ const projects = await getCollection("projects");
 <Page>
     <section
         class="flex flex-col h-full w-full pl-[4vw] pr-[4vw] gap-8 pt-24"
-        aria-labelledby="about-stiven">
+        aria-labelledby="about-stiven"
+        transition:name="page-content"
+        transition:animate={projectsTransition}>
         <h1
             id="hero-title"
             class="font-display text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em] shrink-0">

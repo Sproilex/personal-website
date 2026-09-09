@@ -1,6 +1,15 @@
 ---
 import "@fontsource/space-grotesk/600.css";
 import { Icon } from "astro-icon/components";
+
+const pathname = Astro.url.pathname;
+
+const navLinks = [
+    { href: "/", label: "Home" },
+    { href: "/contact", label: "Contact" },
+    { href: "/projects", label: "Projects" },
+    { href: "/about", label: "About" },
+];
 ---
 
 <style>
@@ -16,7 +25,8 @@ import { Icon } from "astro-icon/components";
 </style>
 
 <aside
-    class="relative z-20 flex justify-between h-full w-[120px] shrink-0 flex-col border-r-2 border-border bg-bg/60 backdrop-blur-sm">
+    class="relative z-20 flex justify-between h-full w-[120px] shrink-0 flex-col border-r-2 border-border bg-bg/60 backdrop-blur-sm"
+    transition:animate="none">
     <a
         href="/"
         class="w-full flex justify-center"
@@ -29,26 +39,15 @@ import { Icon } from "astro-icon/components";
 
     <nav
         class="absolute z-0 t-0 w-full flex flex-1 items-center justify-center flex-col h-full gap-10">
-        <a
-            href="/"
-            class="active">
-            Home
-        </a>
-        <a
-            href="/about"
-            class="">
-            About
-        </a>
-        <a
-            href="/projects"
-            class="flex items-center justify-center text-text-highlight uppercase font-medium">
-            Projects
-        </a>
-        <a
-            href="/contact"
-            class="flex items-center justify-center text-text-highlight uppercase font-medium">
-            Contact
-        </a>
+        {
+            navLinks.map((link) => (
+                <a
+                    href={link.href}
+                    class={pathname === link.href ? "active" : ""}>
+                    {link.label}
+                </a>
+            ))
+        }
     </nav>
 
     <div

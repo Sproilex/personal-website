@@ -1,11 +1,14 @@
 ---
 import Page from "../layouts/page.astro";
+import { homeTransition } from "../transitions";
 ---
 
 <Page>
     <section
         class="absolute inset-0 z-10 pl-[80px]"
-        aria-labelledby="hero-title">
+        aria-labelledby="hero-title"
+        transition:name="page-content"
+        transition:animate={homeTransition}>
         <div class="flex h-full w-full items-center">
             <div class="flex flex-col gap-8 ml-[8vw] max-w-[400px]">
                 <h1

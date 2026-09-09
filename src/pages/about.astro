@@ -1,5 +1,6 @@
 ---
 import Page from "../layouts/page.astro";
+import { aboutTransition } from "../transitions";
 ---
 
 <style>
@@ -23,7 +24,10 @@ import Page from "../layouts/page.astro";
 </style>
 
 <Page>
-    <div class="flex h-full w-full ml-[4vw] gap-4 pr-[120px]">
+    <div
+        class="flex h-full w-full ml-[4vw] gap-4 pr-[120px]"
+        transition:name="page-content"
+        transition:animate={aboutTransition}>
         <section
             class="w-[60%]"
             aria-labelledby="about-stiven">
