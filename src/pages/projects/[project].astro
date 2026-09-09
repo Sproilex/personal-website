@@ -26,26 +26,28 @@ const {
     outcome,
     impact,
     mockupUrl,
-    liveUrl,
 } = entry.data;
 
 const stack = technologies.slice(0, 4).join(" · ");
-const nextSlug = next.data.slug ?? next.id;
 ---
 
 <style>
     @reference "#global.css";
 
     .meta-row {
-        @apply flex justify-between items-baseline py-4 border-b border-border gap-8;
+        @apply flex justify-between items-baseline py-4 border-b-2 border-border gap-8;
+    }
+
+    .meta-row:first-child {
+        @apply pt-0;
     }
 
     .meta-label {
-        @apply text-xs font-display tracking-widest uppercase text-text-muted shrink-0;
+        @apply text-sm font-display tracking-widest uppercase text-text-highlight shrink-0;
     }
 
     .meta-value {
-        @apply text-sm text-text text-right;
+        @apply text-base text-text text-right;
     }
 
     .summary-card {
@@ -57,7 +59,7 @@ const nextSlug = next.data.slug ?? next.id;
     }
 
     .prose :global(h2) {
-        @apply text-3xl font-medium text-text mb-4 leading-tight;
+        @apply text-3xl font-display font-bold text-text mb-4 leading-tight;
     }
 
     .prose :global(h3) {
@@ -81,8 +83,7 @@ const nextSlug = next.data.slug ?? next.id;
     <section class="flex flex-col h-full w-full overflow-y-auto">
         <div class="flex flex-col gap-16 px-[4vw] pt-12">
             <!-- HERO -->
-            <div class="flex gap-16 items-center">
-                <!-- Left -->
+            <div class="flex gap-16 items-start">
                 <div class="flex flex-col gap-8 w-1/2">
                     <a
                         href="/projects"
@@ -116,42 +117,18 @@ const nextSlug = next.data.slug ?? next.id;
                                 </a>
                             )
                         }
-                        {
-                            liveUrl && (
-                                <a
-                                    href={liveUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="text-sm font-display tracking-widest uppercase text-text-muted hover:text-text transition-colors">
-                                    Visit Live Site
-                                </a>
-                            )
-                        }
                     </div>
                 </div>
 
-                <!-- Right: meta -->
-                <div class="w-1/2">
+                <div class="w-1/2 pt-10">
                     <div class="meta-row">
-                        <span class="meta-label">Role</span>
-                        <span class="meta-value">{role}</span>
+                        <span class="meta-label">Year</span>
+                        <span class="meta-value">{year}</span>
                     </div>
-                    {
-                        year && (
-                            <div class="meta-row">
-                                <span class="meta-label">Year</span>
-                                <span class="meta-value">{year}</span>
-                            </div>
-                        )
-                    }
-                    {
-                        team && (
-                            <div class="meta-row">
-                                <span class="meta-label">Team</span>
-                                <span class="meta-value">{team}</span>
-                            </div>
-                        )
-                    }
+                    <div class="meta-row">
+                        <span class="meta-label">Team</span>
+                        <span class="meta-value">{team}</span>
+                    </div>
                     <div class="meta-row border-b-0">
                         <span class="meta-label">Stack</span>
                         <span class="meta-value">{stack}</span>
@@ -171,12 +148,16 @@ const nextSlug = next.data.slug ?? next.id;
                         </div>
                     )
                 }
-                <div class="summary-card">
-                    <span class="summary-card-label">Role</span>
-                    <p class="text-sm text-text-muted leading-relaxed">
-                        {role}
-                    </p>
-                </div>
+                {
+                    role && (
+                        <div class="summary-card">
+                            <span class="summary-card-label">Role</span>
+                            <p class="text-sm text-text-muted leading-relaxed">
+                                {role}
+                            </p>
+                        </div>
+                    )
+                }
                 {
                     outcome && (
                         <div class="summary-card">
@@ -199,12 +180,12 @@ const nextSlug = next.data.slug ?? next.id;
                 }
             </div>
 
-            <!-- MD BODY -->
+            <!-- BODY -->
             <div class="prose max-w-none">
                 <Content />
             </div>
 
-            <!-- FOOTER CTA -->
+            <!-- FOOTER -->
             <div
                 class="flex items-center justify-between border-t border-border py-10 mb-8">
                 <p class="text-text-muted">
@@ -215,11 +196,6 @@ const nextSlug = next.data.slug ?? next.id;
                         href="/contact"
                         class="btn btn-primary">
                         Get in Touch
-                    </a>
-                    <a
-                        href={`/projects/${nextSlug}`}
-                        class="text-sm font-display tracking-widest uppercase text-text-muted hover:text-text transition-colors">
-                        · Next Project →
                     </a>
                 </div>
             </div>
