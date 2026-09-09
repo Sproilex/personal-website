@@ -15,17 +15,29 @@ const navLinks = [
 <style>
     @reference "#global.css";
 
-    nav a {
+    /* Desktop sidebar nav */
+    aside#desktop-nav nav a {
         @apply flex items-center justify-center text-base text-text-highlight transition-all hover:text-text hover:text-lg uppercase font-medium;
     }
 
-    nav a.active {
+    aside#desktop-nav nav a.active {
         @apply font-bold text-lg text-text;
+    }
+
+    /* Mobile drawer nav */
+    aside#mobile-drawer nav a {
+        @apply text-2xl uppercase font-medium text-text-highlight transition-all hover:text-text;
+    }
+
+    aside#mobile-drawer nav a.active {
+        @apply font-bold text-text;
     }
 </style>
 
+<!-- Desktop sidebar (hidden on mobile/tablet) -->
 <aside
-    class="relative z-20 flex justify-between h-full w-[120px] shrink-0 flex-col border-r-2 border-border bg-bg/60 backdrop-blur-sm"
+    id="desktop-nav"
+    class="relative z-20 hidden lg:flex justify-between h-full w-[120px] shrink-0 flex-col border-r-2 border-border bg-bg/60 backdrop-blur-sm"
     transition:animate="none">
     <a
         href="/"
@@ -72,3 +84,123 @@ const navLinks = [
         </a>
     </div>
 </aside>
+
+<!-- Mobile hamburger button (hidden on desktop) -->
+<button
+    id="mobile-menu-btn"
+    class="lg:hidden fixed top-4 right-4 z-[60] flex items-center justify-center w-10 h-10 rounded-md border-2 border-border bg-surface/90 backdrop-blur-sm text-text transition-colors hover:border-text-highlight"
+    aria-label="Toggle menu"
+    transition:animate="none">
+    <Icon
+        id="menu-icon-open"
+        name="mdi:menu"
+        class="w-5 h-5"
+    />
+    <Icon
+        id="menu-icon-close"
+        name="mdi:close"
+        class="w-5 h-5 hidden"
+    />
+</button>
+
+<!-- Mobile overlay -->
+<div
+    id="mobile-overlay"
+    class="lg:hidden fixed inset-0 z-40 bg-black/60 opacity-0 pointer-events-none transition-opacity duration-300"
+    transition:animate="none">
+</div>
+
+<!-- Mobile slide-in drawer -->
+<aside
+    id="mobile-drawer"
+    class="lg:hidden fixed top-0 left-0 z-50 h-full w-[70%] max-w-[280px] flex flex-col border-r-2 border-border bg-surface -translate-x-full transition-transform duration-300 ease-in-out"
+    transition:animate="none">
+    <a
+        href="/"
+        class="flex justify-start px-6 py-6"
+        aria-label="Home">
+        <img
+            src="/images/icon.png"
+            class="w-[40px]"
+        />
+    </a>
+
+    <nav class="flex flex-1 items-center justify-center flex-col gap-10">
+        {
+            navLinks.map((link) => (
+                <a
+                    href={link.href}
+                    class={pathname === link.href ? "active" : ""}>
+                    {link.label}
+                </a>
+            ))
+        }
+    </nav>
+
+    <div
+        class="flex items-center justify-center gap-6 border-t-2 border-border py-5">
+        <a
+            href="https://www.linkedin.com/in/stiven-ilarraza-7865b8170/"
+            aria-label="LinkedIn"
+            class="flex items-center justify-center text-text transition-colors hover:text-text-faint">
+            <Icon
+                class="w-6 h-6 transition-all shrink-0"
+                name="mdi:linkedin"
+            />
+        </a>
+        <a
+            href="https://www.dropbox.com/scl/fi/1234567890/Curriculum_Vitae_Stiven_Illarraza.pdf?rlkey=1234567890abcdefg&dl=1"
+            aria-label="Curriculum Vitae"
+            class="flex items-center justify-center text-text transition-colors hover:text-text-faint">
+            <Icon
+                class="w-6 h-6 transition-all shrink-0"
+                name="mdi:file"
+            />
+        </a>
+    </div>
+</aside>
+
+<script>
+    function initMobileMenu() {
+        const btn = document.getElementById("mobile-menu-btn");
+        const overlay = document.getElementById("mobile-overlay");
+        const drawer = document.getElementById("mobile-drawer");
+        const iconOpen = document.getElementById("menu-icon-open");
+        const iconClose = document.getElementById("menu-icon-close");
+
+        if (!btn || !overlay || !drawer) return;
+
+        let isOpen = false;
+
+        function openDrawer() {
+            isOpen = true;
+            drawer.classList.remove("-translate-x-full");
+            overlay.classList.remove("opacity-0", "pointer-events-none");
+            iconOpen?.classList.add("hidden");
+            iconClose?.classList.remove("hidden");
+        }
+
+        function closeDrawer() {
+            isOpen = false;
+            drawer.classList.add("-translate-x-full");
+            overlay.classList.add("opacity-0", "pointer-events-none");
+            iconOpen?.classList.remove("hidden");
+            iconClose?.classList.add("hidden");
+        }
+
+        btn.addEventListener("click", () => {
+            if (isOpen) closeDrawer();
+            else openDrawer();
+        });
+
+        overlay.addEventListener("click", closeDrawer);
+
+        // Close on nav link click
+        drawer.querySelectorAll("nav a").forEach((link) => {
+            link.addEventListener("click", closeDrawer);
+        });
+    }
+
+    initMobileMenu();
+    document.addEventListener("astro:page-load", initMobileMenu);
+</script>

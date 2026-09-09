@@ -85,10 +85,10 @@ const stack = technologies.slice(0, 4).join(" · ");
         class="flex flex-col h-full w-full overflow-y-auto"
         transition:name="page-content"
         transition:animate={detailTransition}>
-        <div class="flex flex-col gap-16 px-[4vw] pt-12">
+        <div class="flex flex-col gap-10 lg:gap-16 px-4 sm:px-6 lg:px-[4vw] pt-20 lg:pt-12">
             <!-- HERO -->
-            <div class="flex gap-16 items-start">
-                <div class="flex flex-col gap-8 w-1/2">
+            <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
+                <div class="flex flex-col gap-8 w-full lg:w-1/2">
                     <a
                         href="/projects"
                         class="flex items-center gap-2 text-xs font-display tracking-widest uppercase text-text-muted hover:text-text transition-colors w-fit">
@@ -96,12 +96,12 @@ const stack = technologies.slice(0, 4).join(" · ");
                     </a>
 
                     <h1
-                        class="font-display text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em]"
+                        class="font-display text-6xl sm:text-7xl lg:text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em]"
                         set:html={styledTitle ?? title}
                     />
 
                     <p
-                        class="text-lg text-text-muted leading-relaxed max-w-prose">
+                        class="text-base lg:text-lg text-text-muted leading-relaxed max-w-prose">
                         {description}
                     </p>
 
@@ -124,7 +124,7 @@ const stack = technologies.slice(0, 4).join(" · ");
                     </div>
                 </div>
 
-                <div class="w-1/2 pt-10">
+                <div class="w-full lg:w-1/2 lg:pt-10">
                     <div class="meta-row">
                         <span class="meta-label">Year</span>
                         <span class="meta-value">{year}</span>
@@ -141,7 +141,7 @@ const stack = technologies.slice(0, 4).join(" · ");
             </div>
 
             <!-- SUMMARY CARDS -->
-            <div class="grid grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {
                     problem && (
                         <div class="summary-card">
@@ -191,7 +191,7 @@ const stack = technologies.slice(0, 4).join(" · ");
 
             <!-- FOOTER -->
             <div
-                class="flex items-center justify-between border-t border-border py-10 mb-8">
+                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-border py-10 mb-8">
                 <p class="text-text-muted">
                     Want the long version, or something similar built?
                 </p>

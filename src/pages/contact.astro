@@ -31,13 +31,13 @@ import { contactTransition } from "../transitions";
 
 <Page>
     <div
-        class="flex h-full w-full ml-[4vw] gap-8 pr-[120px]"
+        class="flex flex-col lg:flex-row w-full lg:ml-[4vw] gap-8 lg:pr-[120px] overflow-y-auto lg:overflow-visible pt-20 lg:pt-0 pb-8 lg:pb-0 px-6 lg:px-0 lg:h-full"
         transition:name="page-content"
         transition:animate={contactTransition}>
         <section
-            class="w-[60%]"
+            class="w-full lg:w-[60%]"
             aria-labelledby="about-stiven">
-            <div class="flex h-full w-full items-center">
+            <div class="flex w-full items-center lg:h-full">
                 <div class="flex flex-col gap-8">
                     <h1
                         class="font-display text-base text-text-highlight uppercase">
@@ -45,7 +45,7 @@ import { contactTransition } from "../transitions";
                     </h1>
 
                     <p
-                        class="text-5xl weight-medium leading-[1.2] tracking-[-0.04em] text-text">
+                        class="text-3xl lg:text-5xl weight-medium leading-[1.2] tracking-[-0.04em] text-text">
                         Got a product to build, a system to untangle, or a role
                         to fill? <span class="text-text-highlight"
                             >Start the conversation here</span
@@ -83,7 +83,7 @@ import { contactTransition } from "../transitions";
         </section>
         <section
             aria-labelledby="abilities"
-            class="abilities flex justify-center items-center w-[40%]">
+            class="abilities flex justify-center items-center w-full lg:w-[40%]">
             <form class="flex flex-col gap-8 w-full">
                 <div class="form-step">
                     <span>01</span>
@@ -140,14 +140,14 @@ import { contactTransition } from "../transitions";
                     </div>
                 </div>
                 <div
-                    class="flex items-center items-center justify-between pl-8">
+                    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pl-8">
                     <button
                         type="submit"
                         class="btn btn-primary">
                         Send Message
                     </button>
 
-                    <span class="align-middle">
+                    <span class="align-middle text-sm text-text-muted">
                         Usually answered within 24 hours
                     </span>
                 </div>

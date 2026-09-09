@@ -5,15 +5,15 @@ import { homeTransition } from "../transitions";
 
 <Page>
     <section
-        class="absolute inset-0 z-10 pl-[80px]"
+        class="absolute inset-0 z-10 lg:pl-[80px]"
         aria-labelledby="hero-title"
         transition:name="page-content"
         transition:animate={homeTransition}>
         <div class="flex h-full w-full items-center">
-            <div class="flex flex-col gap-8 ml-[8vw] max-w-[400px]">
+            <div class="flex flex-col gap-8 px-6 lg:px-0 lg:ml-[8vw] max-w-[400px] w-full">
                 <h1
                     id="hero-title"
-                    class="font-display text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em]">
+                    class="font-display text-6xl sm:text-7xl lg:text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em]">
                     <span class="block text-text"> Stiven </span>
                     <span class="block text-text-highlight"> Ilarraza </span>
                 </h1>
