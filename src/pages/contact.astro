@@ -31,7 +31,7 @@ import { contactTransition } from "../transitions";
 
 <Page>
     <div
-        class="flex flex-col lg:flex-row w-full lg:ml-[4vw] gap-8 lg:pr-[120px] overflow-y-auto lg:overflow-visible pt-20 lg:pt-0 pb-8 lg:pb-0 px-6 lg:px-0 lg:h-full"
+        class="flex flex-col lg:flex-row w-full lg:ml-[4vw] lg:mr-[4vw] gap-8 md:gap-16 overflow-y-auto lg:overflow-visible pt-20 lg:pt-0 pb-8 lg:pb-0 px-6 lg:px-0 lg:h-full"
         transition:name="page-content"
         transition:animate={contactTransition}>
         <section
@@ -40,13 +40,12 @@ import { contactTransition } from "../transitions";
             <div class="flex w-full items-center lg:h-full">
                 <div class="flex flex-col gap-8">
                     <h1
-                        class="font-display text-base text-text-highlight uppercase">
+                        class="font-display text-base text-text-highlight uppercase leading-[0.82]">
                         Contact
                     </h1>
-
                     <p
-                        class="text-3xl lg:text-5xl weight-medium leading-[1.2] tracking-[-0.04em] text-text">
-                        Got a product to build, a system to untangle, or a role
+                        class="font-display text-3xl lg:text-5xl weight-medium leading-[1.2] tracking-[-0.04em] text-text">
+                        Got a product to create, an issue to sort out, or a role
                         to fill? <span class="text-text-highlight"
                             >Start the conversation here</span
                         >. I read everything and reply within a day.
@@ -116,14 +115,18 @@ import { contactTransition } from "../transitions";
                                     label: "Product build",
                                     value: "product-build",
                                 },
-                                {
-                                    label: "Platform / API work",
-                                    value: "platform-api",
-                                },
                                 { label: "Consulting", value: "consulting" },
                                 {
                                     label: "Full-time role",
                                     value: "full-time-role",
+                                },
+                                {
+                                    label: "Part-time role",
+                                    value: "part-time-role",
+                                },
+                                {
+                                    label: "Other",
+                                    value: "other",
                                 },
                             ]}
                         />
@@ -140,7 +143,7 @@ import { contactTransition } from "../transitions";
                     </div>
                 </div>
                 <div
-                    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pl-8">
+                    class="flex flex-col sm:flex-row items-center justify-between gap-4 pl-8">
                     <button
                         type="submit"
                         class="btn btn-primary">
