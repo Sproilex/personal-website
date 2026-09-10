@@ -85,7 +85,8 @@ const stack = technologies.slice(0, 4).join(" · ");
         class="flex flex-col h-full w-full overflow-y-auto"
         transition:name="page-content"
         transition:animate={detailTransition}>
-        <div class="flex flex-col gap-10 lg:gap-16 px-4 sm:px-6 lg:px-[4vw] pt-20 lg:pt-12">
+        <div
+            class="flex flex-col gap-10 lg:gap-16 px-4 sm:px-6 lg:px-[4vw] pt-20 lg:pt-12">
             <!-- HERO -->
             <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
                 <div class="flex flex-col gap-8 w-full lg:w-1/2">
@@ -105,23 +106,21 @@ const stack = technologies.slice(0, 4).join(" · ");
                         {description}
                     </p>
 
-                    <div class="flex items-center gap-6">
-                        {
-                            mockupUrl && (
-                                <a
-                                    href={mockupUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="btn btn-primary flex items-center gap-2">
-                                    <Icon
-                                        name="mdi:file-pdf-box"
-                                        class="w-4 h-4"
-                                    />
-                                    View Mockup (PDF)
-                                </a>
-                            )
-                        }
-                    </div>
+                    {
+                        mockupUrl && (
+                            <a
+                                href={mockupUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="btn btn-primary flex items-center gap-2">
+                                <Icon
+                                    name="mdi:file-pdf-box"
+                                    class="w-4 h-4"
+                                />
+                                View Mockup (PDF)
+                            </a>
+                        )
+                    }
                 </div>
 
                 <div class="w-full lg:w-1/2 lg:pt-10">
@@ -191,7 +190,7 @@ const stack = technologies.slice(0, 4).join(" · ");
 
             <!-- FOOTER -->
             <div
-                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-border py-10 mb-8">
+                class="flex flex-col sm:flex-row items-center md:items-start justify-between gap-4 border-t border-border py-10 mb-8">
                 <p class="text-text-muted">
                     Want the long version, or something similar built?
                 </p>
