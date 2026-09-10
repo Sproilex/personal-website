@@ -9,16 +9,18 @@ import { homeTransition } from "../transitions";
         aria-labelledby="hero-title"
         transition:name="page-content"
         transition:animate={homeTransition}>
-        <div class="flex h-full w-full items-center">
-            <div class="flex flex-col gap-8 px-6 lg:px-0 lg:ml-[8vw] max-w-[400px] w-full">
+        <div
+            class="flex h-full w-full justify-center items-center lg:justify-start">
+            <div
+                class="flex flex-col gap-8 px-6 lg:px-0 lg:ml-[8vw] max-w-[500px] lg:max-w-[400px] w-full">
                 <h1
                     id="hero-title"
-                    class="font-display text-6xl sm:text-7xl lg:text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em]">
+                    class="font-display text-center text-7xl sm:text-6xl md:text-8xl lg:text-left lg:text-8xl font-medium uppercase leading-[0.82] tracking-[-0.04em]">
                     <span class="block text-text"> Stiven </span>
                     <span class="block text-text-highlight"> Ilarraza </span>
                 </h1>
 
-                <p class="text-sm">
+                <p class="text-center text-base lg:text-sm lg:text-left">
                     Software engineer with over 8 years of experience building
                     products, systems, and digital experiences across the stack.
                 </p>
