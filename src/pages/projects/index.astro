@@ -28,13 +28,13 @@ const projects = await getCollection("projects");
     }
 
     .projects-grid {
-        @apply grid auto-rows-max gap-4 flex-1 pb-8 -mt-8 pt-8 overflow-y-auto pr-4 grid-cols-[repeat(auto-fill,minmax(280px,1fr))];
+        @apply grid auto-rows-max gap-4 flex-1 pb-8 -mt-4 pt-6 overflow-y-auto pr-4 grid-cols-[repeat(auto-fill,minmax(280px,1fr))];
     }
 </style>
 
 <Page>
     <section
-        class="flex flex-col h-full w-full px-4 sm:px-6 lg:pl-[4vw] lg:pr-[4vw] gap-6 lg:gap-8 pt-20 lg:pt-24"
+        class="flex flex-col h-full w-full px-4 sm:px-6 lg:pl-[4vw] lg:pr-[4vw] gap-6 lg:gap-8 pt-16 md:pt-[4vw]"
         aria-labelledby="about-stiven"
         transition:name="page-content"
         transition:animate={projectsTransition}>

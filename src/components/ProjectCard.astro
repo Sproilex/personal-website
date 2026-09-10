@@ -22,7 +22,9 @@ const {
 
 <article
     class="min-w-[300px] w-100% rounded-lg border border-border overflow-hidden flex flex-col transition-all duration-300 hover:cursor-pointer hover:-translate-y-2">
-    <div class="relative h-fit shrink-0 bg-bg-secondary overflow-hidden">
+    <a
+        href={caseStudyUrl}
+        class="relative h-fit shrink-0 bg-bg-secondary overflow-hidden">
         {
             image && (
                 <img
@@ -41,7 +43,7 @@ const {
                 )
             }
         </div>
-    </div>
+    </a>
 
     <div class="flex flex-col gap-4 p-6 bg-bg flex-1">
         <div class="flex items-baseline justify-between gap-4">
