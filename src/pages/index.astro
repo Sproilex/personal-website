@@ -1,11 +1,27 @@
 ---
+import { getCollection } from "astro:content";
 import Page from "../layouts/page.astro";
 import StarProjectCard from "../components/StarProjectCard.astro";
 import { homeTransition } from "../transitions";
+
+const featuredProjects = (await getCollection("projects"))
+    .filter((e) => e.data.featuredProject === true)
+    .map((e) => ({
+        id: e.id,
+        title: e.data.title,
+        description: e.data.description,
+        href: `/projects/${e.data.slug ?? e.id}`,
+        thumbnail: e.data.image ? `/images/${e.data.image}` : undefined,
+    }));
 ---
 
 <Page>
     <StarProjectCard />
+    <script
+        type="application/json"
+        id="star-projects"
+        set:html={JSON.stringify(featuredProjects)}
+    />
     <section
         class="absolute inset-0 z-10 lg:pl-[80px]"
         aria-labelledby="hero-title"

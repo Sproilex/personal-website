@@ -10,8 +10,8 @@
     aria-hidden="true"
     class="fixed z-[9999] w-64 rounded-lg border border-border bg-surface flex flex-col overflow-hidden opacity-0 pointer-events-none transition-opacity duration-150"
 >
-    <!-- Per-project color accent strip -->
-    <div id="star-project-card-accent" class="h-0.5 w-full shrink-0"></div>
+    <!-- Accent strip using the site's highlight color -->
+    <div class="h-0.5 w-full shrink-0 bg-text-highlight"></div>
 
     <!-- Thumbnail (hidden when no thumbnail URL is provided) -->
     <div
@@ -51,9 +51,6 @@
 
     if (!card) throw new Error("[star-project-card] element not found");
 
-    const accentEl = document.getElementById(
-        "star-project-card-accent",
-    ) as HTMLDivElement;
     const thumbWrapper = document.getElementById(
         "star-project-card-thumb",
     ) as HTMLDivElement;
@@ -106,7 +103,6 @@
                     description: string;
                     href: string;
                     thumbnail?: string;
-                    color: string;
                 };
                 cssX: number;
                 cssY: number;
@@ -117,7 +113,6 @@
 
         // Populate content before measuring so offsetHeight is accurate.
         card.href = project.href;
-        accentEl.style.backgroundColor = project.color;
         titleEl.textContent = project.title;
         descEl.textContent = project.description;
 

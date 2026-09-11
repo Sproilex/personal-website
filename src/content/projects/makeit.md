@@ -35,6 +35,7 @@ start_date: 11/2025
 end_date: 07/2026
 image: "MakeIt - Hero.jpg"
 slug: "makeit"
+featuredProject: true
 styledTitle: "Make It <br> <span class='text-text-highlight'>Tool</span>"
 team: "3 engineers · 1 designer"
 problem: "Teams relied on scattered tools to track data, which made analysis slow and inconsistent."

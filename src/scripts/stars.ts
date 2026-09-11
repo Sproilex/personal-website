@@ -19,70 +19,114 @@ import { loadFull } from "tsparticles";
 
 /**
  * ============================================================
- * PROJECTS
+ * PROJECTS — TYPES & CONSTANTS
+ * ============================================================
+ */
+interface ProjectData {
+    id: string;
+    title: string;
+    description: string;
+    href: string;
+    thumbnail?: string;
+    /** Assigned at runtime by generatePositions(), in canvas % */
+    x: number;
+    /** Assigned at runtime by generatePositions(), in canvas % */
+    y: number;
+}
+
+/**
+ * The "imaginary box" within which project stars are randomly
+ * placed. Right-biased to avoid the hero text on desktop; still
+ * wide enough to look natural on mobile. All values are in %.
+ */
+const STAR_ZONE = {
+    xMin: 42,
+    xMax: 90,
+    yMin: 12,
+    yMax: 88,
+} as const;
+
+/** Minimum Euclidean distance (in %) between any two project stars. */
+const MIN_SPACING_PCT = 18;
+
+const PROJECT_STAR_SIZE = 18;
+
+/**
+ * Mutable list populated in initSpace() once featured projects
+ * are loaded and positions are assigned. Everything that needs
+ * the project list reads from here.
+ */
+let featuredProjects: ProjectData[] = [];
+
+/**
+ * ============================================================
+ * LOAD FEATURED PROJECTS
  * ============================================================
  *
- * x / y están expresados en porcentaje del canvas.
- *
- * Estos datos pertenecen a TU aplicación, no a tsParticles.
+ * index.astro injects a <script type="application/json"
+ * id="star-projects"> element at build time with the featured
+ * projects from the content collection. On any other page the
+ * element is absent and we return an empty array gracefully.
  */
-const projects = [
-    {
-        id: "project-01",
-        title: "MakeIt Tool",
-        description: "Realtime SEO intelligence platform dashboard.",
-        href: "/projects/makeit",
-        thumbnail: "/images/MakeIt - Hero.jpg",
+const loadFeaturedProjects = (): Omit<ProjectData, "x" | "y">[] => {
+    const el = document.getElementById("star-projects");
 
-        x: 72,
-        y: 24,
+    if (!el) {
+        return [];
+    }
 
-        color: "#a78bfa",
-        size: 18,
-    },
+    try {
+        return JSON.parse(el.textContent ?? "[]");
+    } catch {
+        console.error("[stars] Could not parse #star-projects JSON");
+        return [];
+    }
+};
 
-    {
-        id: "project-02",
-        title: "S.A.R.A.",
-        description: "B2B platform for the remodeling and real estate industry.",
-        href: "/projects/sara",
-        thumbnail: "/images/SARA - Hero.jpg",
+/**
+ * ============================================================
+ * GENERATE POSITIONS
+ * ============================================================
+ *
+ * Places `count` stars inside STAR_ZONE using rejection sampling:
+ * for each star we try up to 50 random candidates and keep the
+ * first one that is at least MIN_SPACING_PCT away from every
+ * already-placed star. If no valid spot is found after 50 tries
+ * we fall back to the last candidate so init never blocks.
+ */
+const generatePositions = (count: number): { x: number; y: number }[] => {
+    const placed: { x: number; y: number }[] = [];
+    const { xMin, xMax, yMin, yMax } = STAR_ZONE;
 
-        x: 80,
-        y: 62,
+    for (let i = 0; i < count; i++) {
+        let candidate = {
+            x: xMin + Math.random() * (xMax - xMin),
+            y: yMin + Math.random() * (yMax - yMin),
+        };
 
-        color: "#818cf8",
-        size: 18,
-    },
+        for (let attempt = 0; attempt < 50; attempt++) {
+            const c = {
+                x: xMin + Math.random() * (xMax - xMin),
+                y: yMin + Math.random() * (yMax - yMin),
+            };
 
-    {
-        id: "project-03",
-        title: "Project Orbit",
-        description: "Coming soon.",
-        href: "#",
+            const tooClose = placed.some((p) => {
+                const dx = c.x - p.x;
+                const dy = c.y - p.y;
+                return Math.sqrt(dx * dx + dy * dy) < MIN_SPACING_PCT;
+            });
 
-        x: 55,
-        y: 75,
+            if (!tooClose) {
+                candidate = c;
+                break;
+            }
+        }
 
-        color: "#c4b5fd",
-        size: 18,
-    },
+        placed.push(candidate);
+    }
 
-    {
-        id: "project-04",
-        title: "Project Nova",
-        description: "Coming soon.",
-        href: "#",
-
-        x: 58,
-        y: 43,
-
-        color: "#93c5fd",
-        size: 18,
-    },
-];
-
-const projectStarSize = 18;
+    return placed;
+};
 
 /**
  * ============================================================
@@ -99,11 +143,11 @@ const projectHitRadius = 35;
 const findProjectAtPoint = (
     pointer: { x: number; y: number },
     canvasSize: { width: number; height: number },
-): (typeof projects)[number] | undefined => {
-    let closestProject: (typeof projects)[number] | undefined;
+): ProjectData | undefined => {
+    let closestProject: ProjectData | undefined;
     let closestDistance = Infinity;
 
-    for (const project of projects) {
+    for (const project of featuredProjects) {
         const position = {
             x: (project.x / 100) * canvasSize.width,
             y: (project.y / 100) * canvasSize.height,
@@ -1236,58 +1280,33 @@ const loadProjectRepulse = async () => {
  * de `setDensity()` (simulando un resize) y las 4 partículas
  * sobrevivieron intactas.
  */
-const createProjectParticlesOptions = (project: (typeof projects)[number]) => ({
-    /**
-     * Forma.
-     *
-     * "sparkle" es la forma custom de 4 puntas registrada más
-     * arriba (loadSparkleShape) — sustituye a la "star" de 5
-     * puntas que traía tsParticles por defecto.
-     */
+const createProjectParticlesOptions = (_project: ProjectData) => ({
     shape: {
         type: "sparkle",
     },
 
-    /**
-     * Tamaño.
-     */
     size: {
-        value: projectStarSize,
+        value: PROJECT_STAR_SIZE,
     },
 
-    /**
-     * Color individual.
-     */
     color: {
-        value: project.color,
+        value: "#ffffff",
     },
 
-    /**
-     * Totalmente opacas.
-     */
     opacity: {
         value: 1,
     },
 
-    /**
-     * Pequeño borde.
-     */
     stroke: {
         width: 1,
-        color: project.color,
-        opacity: 0.5,
+        color: "#ffffff",
+        opacity: 0.4,
     },
 
-    /**
-     * Los proyectos NO viajan por el espacio.
-     */
     move: {
         enable: false,
     },
 
-    /**
-     * Pequeño efecto de brillo.
-     */
     twinkle: {
         particles: {
             enable: true,
@@ -1296,20 +1315,12 @@ const createProjectParticlesOptions = (project: (typeof projects)[number]) => ({
         },
     },
 
-    /**
-     * Los proyectos también pueden formar
-     * conexiones con estrellas cercanas.
-     */
     links: {
         enable: true,
-
         distance: 145,
-
         opacity: 0.35,
-
         width: 0.8,
-
-        color: project.color,
+        color: "#a78bfa",
     },
 });
 
@@ -1323,7 +1334,7 @@ const createProjectParticlesOptions = (project: (typeof projects)[number]) => ({
  * plugin de manual particles para convertir porcentaje -> px.
  */
 const addProjectParticles = (container: Container) => {
-    for (const project of projects) {
+    for (const project of featuredProjects) {
         container.particles.addParticle(
             getPosition(
                 { x: project.x, y: project.y, mode: "percent" },
@@ -1974,8 +1985,25 @@ const initSpace = async () => {
      * cada resize de ventana.
      */
     if (container) {
-        addProjectParticles(container);
-        setupProjectInteraction(container);
+        /**
+         * Load featured projects from the JSON blob injected by
+         * index.astro, assign random positions within STAR_ZONE,
+         * then spawn the particles and wire up interaction.
+         * On pages without #star-projects this is a no-op.
+         */
+        const raw = loadFeaturedProjects();
+        const positions = generatePositions(raw.length);
+
+        featuredProjects = raw.map((p, i) => ({
+            ...p,
+            x: positions[i].x,
+            y: positions[i].y,
+        }));
+
+        if (featuredProjects.length > 0) {
+            addProjectParticles(container);
+            setupProjectInteraction(container);
+        }
     }
 };
 

@@ -35,6 +35,7 @@ start_date: 11/2025
 end_date: 07/2026
 image: "SARA - Hero.jpg"
 slug: "sara"
+featuredProject: true
 styledTitle: "S<span class='text-text-highlight'>.</span>A<span class='text-text-highlight'>.</span>R<span class='text-text-highlight'>.</span>A<span class='text-text-highlight'>.</span>"
 team: "4 engineers · 1 designer"
 problem: "Fragmented operational workflows required repetitive manual work across disconnected tools."
