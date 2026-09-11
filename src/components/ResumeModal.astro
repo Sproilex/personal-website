@@ -2,6 +2,59 @@
 import { Icon } from "astro-icon/components";
 ---
 
+<style is:global>
+    @keyframes resume-slide-in {
+        from {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    @keyframes resume-slide-out {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+    }
+    @keyframes resume-backdrop-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    @keyframes resume-backdrop-out {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+
+    #resume-modal[open] {
+        animation: resume-slide-in 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+            both;
+    }
+    #resume-modal.is-closing {
+        animation: resume-slide-out 0.28s cubic-bezier(0.55, 0, 1, 0.45) both;
+    }
+    #resume-modal[open]::backdrop {
+        animation: resume-backdrop-in 0.35s ease both;
+    }
+    #resume-modal.is-closing::backdrop {
+        animation: resume-backdrop-out 0.28s ease both;
+    }
+</style>
+
 <dialog
     id="resume-modal"
     class="m-auto w-full max-w-4xl max-h-[90dvh] rounded-xl border-2 border-border bg-surface p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm open:flex open:flex-col">
@@ -86,7 +139,15 @@ import { Icon } from "astro-icon/components";
         }
 
         function closeModal() {
-            modal!.close();
+            modal!.classList.add("is-closing");
+            modal!.addEventListener(
+                "animationend",
+                () => {
+                    modal!.classList.remove("is-closing");
+                    modal!.close();
+                },
+                { once: true },
+            );
         }
 
         // Trigger buttons (any element with data-resume-trigger)
@@ -99,6 +160,12 @@ import { Icon } from "astro-icon/components";
         // Click outside the panel closes the modal
         modal.addEventListener("click", (e) => {
             if (e.target === modal) closeModal();
+        });
+
+        // Intercept ESC so the exit animation plays before close
+        modal.addEventListener("cancel", (e) => {
+            e.preventDefault();
+            closeModal();
         });
 
         // Share / clipboard fallback
