@@ -7,11 +7,17 @@ function getPageTarget(pathname: string): { x: number; y: number } {
     const px = PAN_X();
     const py = PAN_Y();
 
+    // Each offset matches the direction the incoming content slides toward (entry keyframe).
+    // home    entry-tl: from (-200vw,-200vh) → moves R+D  → stars pan (+,+)
+    // projects entry-br: from (+200vw,+200vh) → moves L+U  → stars pan (-,-)
+    // about   entry-bl: from (-200vw,+200vh) → moves R+U  → stars pan (+,-)
+    // contact entry-tr: from (+100vw,-200vh) → moves L+D  → stars pan (-,+)
+    // detail  entry-down: from (0,+200vh)    → moves U    → stars pan (0,-)
     if (pathname === "/") return { x: 0, y: 0 };
-    if (pathname === "/projects") return { x: px, y: py };
-    if (pathname === "/about") return { x: -px, y: py };
-    if (pathname === "/contact") return { x: px, y: -py };
-    if (pathname.startsWith("/projects/")) return { x: 0, y: py };
+    if (pathname === "/projects") return { x: -px, y: -py };
+    if (pathname === "/about") return { x: px, y: -py };
+    if (pathname === "/contact") return { x: -px, y: py };
+    if (pathname.startsWith("/projects/")) return { x: 0, y: -py };
 
     return { x: 0, y: 0 };
 }
