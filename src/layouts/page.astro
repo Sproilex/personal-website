@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import "@fontsource/space-grotesk/600.css";
 import Navbar from "../components/Navbar.astro";
+import ResumeModal from "../components/ResumeModal.astro";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
@@ -74,6 +75,8 @@ const resolvedOgImage = ogImage
                 <slot />
             </div>
         </main>
+
+        <ResumeModal />
 
         <script>
             import "../scripts/stars";
