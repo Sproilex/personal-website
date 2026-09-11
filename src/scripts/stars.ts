@@ -966,135 +966,14 @@ const initSpace = async () => {
                 },
             },
 
-            emitters: [
-                {
-                    name: "comet-right",
-
-                    position: { x: 0, y: 25 },
-                    direction: "right",
-
-                    size: {
-                        width: 0,
-                        height: 25,
-                        mode: "percent",
-                    },
-
-                    rate: {
-                        quantity: 1,
-                        delay: 3.5,
-                    },
-
-                    particles: {
-                        shape: { type: "circle" },
-
-                        color: {
-                            value: ["#ffffff", "#c4b5fd", "#93c5fd"],
-                        },
-
-                        size: {
-                            value: { min: 1.5, max: 3 },
-                        },
-
-                        opacity: {
-                            value: { min: 0.7, max: 1 },
-                        },
-
-                        move: {
-                            enable: true,
-                            direction: "right",
-                            speed: { min: 7, max: 11 },
-                            straight: true,
-                            outModes: { default: "destroy" },
-                        },
-                    },
-                },
-
-                {
-                    name: "comet-left",
-
-                    position: { x: 100, y: 70 },
-                    direction: "left",
-
-                    size: {
-                        width: 0,
-                        height: 20,
-                        mode: "percent",
-                    },
-
-                    rate: {
-                        quantity: 1,
-                        delay: 5,
-                    },
-
-                    particles: {
-                        shape: { type: "circle" },
-
-                        color: {
-                            value: ["#ffffff", "#a78bfa", "#818cf8"],
-                        },
-
-                        size: {
-                            value: { min: 1.5, max: 3 },
-                        },
-
-                        opacity: {
-                            value: { min: 0.7, max: 1 },
-                        },
-
-                        move: {
-                            enable: true,
-                            direction: "left",
-                            speed: { min: 8, max: 12 },
-                            straight: true,
-                            outModes: { default: "destroy" },
-                        },
-                    },
-                },
-
-                {
-                    name: "comet-diagonal",
-
-                    position: { x: 15, y: 0 },
-                    direction: "bottom-right",
-
-                    size: {
-                        width: 25,
-                        height: 0,
-                        mode: "percent",
-                    },
-
-                    rate: {
-                        quantity: 1,
-                        delay: 7,
-                    },
-
-                    particles: {
-                        shape: { type: "circle" },
-
-                        color: { value: "#ffffff" },
-
-                        size: {
-                            value: { min: 1, max: 2.5 },
-                        },
-
-                        opacity: { value: 0.9 },
-
-                        move: {
-                            enable: true,
-                            direction: "bottom-right",
-                            speed: { min: 6, max: 9 },
-                            straight: true,
-                            outModes: { default: "destroy" },
-                        },
-                    },
-                },
-            ],
+            emitters: [],
         },
     });
 
     if (container) {
         starsContainer = container;
         tryInitProjects(container);
+        startCometSpawner(container);
     }
 };
 
@@ -1121,9 +1000,134 @@ const tryInitProjects = (container: Container): void => {
     projectsInitialized = true;
 };
 
-// On every navigation, retry in case the user just arrived at home for the first time.
+// On every navigation, resume the animation loop and retry project init.
 document.addEventListener("astro:page-load", () => {
-    if (starsContainer) tryInitProjects(starsContainer);
+    if (starsContainer) {
+        starsContainer.play();
+        tryInitProjects(starsContainer);
+    }
+});
+
+const palette = ["#ffffff", "#c4b5fd", "#93c5fd", "#a78bfa", "#818cf8"];
+
+// Converts viewport CSS coordinates to canvas pixel coordinates.
+// Uses getBoundingClientRect so the canvas transform from space-pan is accounted for.
+const getViewportEdges = (container: Container) => {
+    const el = container.canvas.domElement;
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    const w = container.canvas.size.width;
+    const h = container.canvas.size.height;
+    const toX = (vx: number) => ((vx - rect.left) / rect.width) * w;
+    const toY = (vy: number) => ((vy - rect.top) / rect.height) * h;
+    return { toX, toY };
+};
+
+type CometParticle = { position: { x: number; y: number }; destroy(): void };
+const cometParticles: CometParticle[] = [];
+
+let cometCount = 0;
+
+const addComet = (
+    container: Container,
+    x: number,
+    y: number,
+    direction: string,
+    speed: { min: number; max: number },
+    size: { min: number; max: number } = { min: 1.5, max: 3.5 },
+): void => {
+    const p = container.particles.addParticle({ x, y }, {
+        shape: { type: "circle" },
+        color: { value: palette[Math.floor(Math.random() * palette.length)] },
+        size: { value: size },
+        opacity: { value: { min: 0.7, max: 1 } },
+        move: { enable: true, direction: direction as never, speed, straight: true, outModes: { default: "destroy" } },
+        links: { enable: false },
+        twinkle: { particles: { enable: false } },
+    });
+    if (p) {
+        cometCount++;
+        console.log(`[comet] spawned #${cometCount} dir=${direction} tracked=${cometParticles.length + 1} total_particles=${container.particles.count}`);
+        cometParticles.push(p as unknown as CometParticle);
+    } else {
+        console.warn(`[comet] addParticle returned undefined — likely hit particle limit. total_particles=${container.particles.count}`);
+    }
+};
+
+// Destroy comets that have left the viewport; runs on a short interval.
+const sweepComets = (container: Container): void => {
+    if (cometParticles.length === 0) return;
+    const edges = getViewportEdges(container);
+    if (!edges) return;
+
+    const { toX, toY } = edges;
+    const minX = toX(-10);
+    const maxX = toX(window.innerWidth + 10);
+    const minY = toY(-10);
+    const maxY = toY(window.innerHeight + 10);
+
+    let i = cometParticles.length;
+    while (i--) {
+        const p = cometParticles[i];
+        const { x, y } = p.position;
+
+        if (x < minX || x > maxX || y < minY || y > maxY) {
+            container.particles.remove(p as unknown as Particle);
+            p.destroy();
+            cometParticles.splice(i, 1);
+            console.log(`[comet] swept out-of-viewport. tracked=${cometParticles.length} total_particles=${container.particles.count}`);
+        }
+    }
+};
+
+// Logo-hover burst: 6 comets from all viewport edges at once.
+const spawnCometBurst = (container: Container): void => {
+    const edges = getViewportEdges(container);
+    if (!edges) return;
+    const { toX, toY } = edges;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    addComet(container, toX(-5), toY(vh * (0.15 + Math.random() * 0.3)), "right", { min: 8, max: 13 });
+    addComet(container, toX(vw + 5), toY(vh * (0.15 + Math.random() * 0.3)), "left", { min: 9, max: 14 });
+    addComet(container, toX(vw * (0.1 + Math.random() * 0.2)), toY(-5), "bottom-right", { min: 7, max: 11 });
+    addComet(container, toX(-5), toY(vh * (0.50 + Math.random() * 0.2)), "right", { min: 7, max: 12 });
+    addComet(container, toX(vw * (0.3 + Math.random() * 0.2)), toY(-5), "bottom", { min: 6, max: 10 });
+    addComet(container, toX(vw + 5), toY(vh * (0.55 + Math.random() * 0.2)), "left", { min: 8, max: 12 });
+};
+
+// Periodic spawner: one comet from a random viewport edge every ~700ms.
+// Uses setInterval instead of tsParticles emitters so it survives page transitions.
+const spawnSingleComet = (container: Container): void => {
+    const edges = getViewportEdges(container);
+    if (!edges) return;
+    const { toX, toY } = edges;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const side = Math.floor(Math.random() * 3);
+
+    if (side === 0) {
+        addComet(container, toX(-5), toY(Math.random() * vh), "right", { min: 7, max: 11 }, { min: 1.5, max: 3 });
+    } else if (side === 1) {
+        addComet(container, toX(vw + 5), toY(Math.random() * vh), "left", { min: 8, max: 12 }, { min: 1.5, max: 3 });
+    } else {
+        const dir = Math.random() > 0.5 ? "bottom-right" : "bottom";
+        addComet(container, toX(Math.random() * vw), toY(-5), dir, { min: 6, max: 9 }, { min: 1, max: 2.5 });
+    }
+};
+
+let cometSpawnerStarted = false;
+
+const startCometSpawner = (container: Container): void => {
+    if (cometSpawnerStarted) return;
+    cometSpawnerStarted = true;
+    setInterval(() => spawnSingleComet(container), 700);
+    setInterval(() => sweepComets(container), 200);
+};
+
+window.addEventListener("logo-comet", () => {
+    if (starsContainer) spawnCometBurst(starsContainer);
 });
 
 initSpace().catch(console.error);

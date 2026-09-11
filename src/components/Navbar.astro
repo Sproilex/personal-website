@@ -34,6 +34,18 @@ const navLinks = [
     aside#mobile-drawer nav a.active {
         @apply font-bold text-text;
     }
+
+    @keyframes logo-wobble {
+        0%   { transform: scale(1); }
+        20%  { transform: scale(0.84); }
+        55%  { transform: scale(1.18); }
+        78%  { transform: scale(0.96); }
+        100% { transform: scale(1); }
+    }
+
+    [data-logo].wobble {
+        animation: logo-wobble 0.5s ease-out forwards;
+    }
 </style>
 
 <!-- Desktop sidebar (hidden on mobile/tablet) -->
@@ -43,13 +55,14 @@ const navLinks = [
     transition:animate="none">
     <a
         href="/"
-        class="w-full flex justify-center"
+        class="relative z-20 w-full flex justify-center"
         aria-label="Home">
         <Image
             src={logoIcon}
             width={80}
             alt=""
             class="w-[40px] my-8"
+            data-logo
         />
     </a>
 
@@ -132,6 +145,7 @@ const navLinks = [
             width={80}
             alt=""
             class="w-[40px]"
+            data-logo
         />
     </a>
 
@@ -219,4 +233,25 @@ const navLinks = [
 
     initMobileMenu();
     document.addEventListener("astro:page-load", initMobileMenu);
+
+    function initLogoHover() {
+        document
+            .querySelectorAll<HTMLImageElement>("[data-logo]")
+            .forEach((logo) => {
+                logo.addEventListener("mouseenter", () => {
+                    logo.classList.remove("wobble");
+                    void logo.offsetWidth; // force reflow so animation restarts cleanly
+                    logo.classList.add("wobble");
+                    logo.addEventListener(
+                        "animationend",
+                        () => logo.classList.remove("wobble"),
+                        { once: true },
+                    );
+                    window.dispatchEvent(new CustomEvent("logo-comet"));
+                });
+            });
+    }
+
+    initLogoHover();
+    document.addEventListener("astro:page-load", initLogoHover);
 </script>
