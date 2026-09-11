@@ -23,3 +23,16 @@ export const projectsTransition = make("space-exit-br", "space-entry-br");
 export const aboutTransition = make("space-exit-bl", "space-entry-bl");
 export const contactTransition = make("space-exit-tr", "space-entry-tr");
 export const detailTransition = make("space-exit-down", "space-entry-down");
+
+/**
+ * Maps each page path to its exit direction name.
+ * Detail pages (/projects/*) fall under "down" — handled by the
+ * consumer with a prefix check.
+ * Used by space-pan.ts to determine which way to translate #stars.
+ */
+export const PAGE_EXIT_DIRECTION: Record<string, string> = {
+    "/": "tl",
+    "/projects": "br",
+    "/about": "bl",
+    "/contact": "tr",
+};

@@ -17,57 +17,35 @@ import {
 
 import { loadFull } from "tsparticles";
 
-/**
- * ============================================================
- * PROJECTS — TYPES & CONSTANTS
- * ============================================================
- */
 interface ProjectData {
     id: string;
     title: string;
     description: string;
     href: string;
     thumbnail?: string;
-    /** Assigned at runtime by generatePositions(), in canvas % */
     x: number;
-    /** Assigned at runtime by generatePositions(), in canvas % */
     y: number;
 }
 
-/**
- * The "imaginary box" within which project stars are randomly
- * placed. Right-biased to avoid the hero text on desktop; still
- * wide enough to look natural on mobile. All values are in %.
- */
+// Viewport occupies the center quarter of the 200vw×200vh canvas (25–75% on each axis).
+// These percentages map the "center" region to canvas-% coordinates:
+//   46% → (0.46 × 200vw) − 50vw = 42vw,  70% → 90vw
+//   30% → (0.30 × 200vh) − 50vh = 10vh,  70% → 90vh
 const STAR_ZONE = {
-    xMin: 42,
-    xMax: 90,
-    yMin: 12,
-    yMax: 88,
+    xMin: 46,
+    xMax: 70,
+    yMin: 30,
+    yMax: 70,
 } as const;
 
-/** Minimum Euclidean distance (in %) between any two project stars. */
-const MIN_SPACING_PCT = 18;
+const MIN_SPACING_PCT = 12;
 
 const PROJECT_STAR_SIZE = 18;
 
-/**
- * Mutable list populated in initSpace() once featured projects
- * are loaded and positions are assigned. Everything that needs
- * the project list reads from here.
- */
 let featuredProjects: ProjectData[] = [];
 
-/**
- * ============================================================
- * LOAD FEATURED PROJECTS
- * ============================================================
- *
- * index.astro injects a <script type="application/json"
- * id="star-projects"> element at build time with the featured
- * projects from the content collection. On any other page the
- * element is absent and we return an empty array gracefully.
- */
+// index.astro injects a <script type="application/json" id="star-projects"> at build time.
+// On pages without it we return [] gracefully.
 const loadFeaturedProjects = (): Omit<ProjectData, "x" | "y">[] => {
     const el = document.getElementById("star-projects");
 
@@ -83,17 +61,7 @@ const loadFeaturedProjects = (): Omit<ProjectData, "x" | "y">[] => {
     }
 };
 
-/**
- * ============================================================
- * GENERATE POSITIONS
- * ============================================================
- *
- * Places `count` stars inside STAR_ZONE using rejection sampling:
- * for each star we try up to 50 random candidates and keep the
- * first one that is at least MIN_SPACING_PCT away from every
- * already-placed star. If no valid spot is found after 50 tries
- * we fall back to the last candidate so init never blocks.
- */
+// Rejection sampling: up to 50 attempts per star, falls back to last candidate so init never blocks.
 const generatePositions = (count: number): { x: number; y: number }[] => {
     const placed: { x: number; y: number }[] = [];
     const { xMin, xMax, yMin, yMax } = STAR_ZONE;
@@ -128,16 +96,6 @@ const generatePositions = (count: number): { x: number; y: number }[] => {
     return placed;
 };
 
-/**
- * ============================================================
- * FIND PROJECT AT POINT (compartido)
- * ============================================================
- *
- * Misma lógica que usa el repulse para saber si el cursor está
- * sobre un proyecto — la reutilizamos también para el tooltip y
- * el click, así solo hay un sitio donde ajustar el radio de
- * detección.
- */
 const projectHitRadius = 35;
 
 const findProjectAtPoint = (
@@ -166,56 +124,20 @@ const findProjectAtPoint = (
     return closestProject;
 };
 
-/**
- * ============================================================
- * PROJECT REPULSE
- * ============================================================
- *
- * Flujo:
- *
- * cursor
- *   ↓
- * ¿está sobre un proyecto?
- *   ↓
- * proyecto encontrado
- *   ↓
- * buscar partículas alrededor
- *   ↓
- * aplicar fuerza radial
- *
- * No utilizamos projectId dentro de particle.options.
- */
 class ProjectRepulseInteractor extends ExternalInteractorBase {
     private readonly repulseRadius = 170;
-
-    /**
-     * Cuánto empujamos, en PÍXELES REALES por frame (en el centro
-     * del radio). Ver la explicación de más abajo sobre por qué
-     * esto ya no se expresa como "velocidad" a secas.
-     */
     private readonly pushPixelsPerFrame = 3;
-
-    /**
-     * Tope de velocidad EFECTIVA (píxeles reales/frame) que puede
-     * alcanzar cualquier partícula empujada, sea cual sea su
-     * velocidad base.
-     */
     private readonly maxEffectivePixelsPerFrame = 9;
 
     clear(): void { }
-
     init(): void { }
-
     reset(): void { }
 
     isEnabled(interactivityData: IInteractivityData): boolean {
         return Boolean(interactivityData.mouse.position);
     }
 
-    interact(
-        interactivityData: IInteractivityData,
-        delta: IDelta,
-    ): void {
+    interact(interactivityData: IInteractivityData, delta: IDelta): void {
         const pointer = interactivityData.mouse.position;
 
         if (!pointer) {
@@ -223,299 +145,111 @@ class ProjectRepulseInteractor extends ExternalInteractorBase {
         }
 
         const container = this.container;
+        const hoveredProject = findProjectAtPoint(pointer, container.canvas.size);
 
-        /**
-         * Convertimos los proyectos definidos en porcentaje
-         * a coordenadas reales del canvas.
-         */
-        const hoveredProject = findProjectAtPoint(
-            pointer,
-            container.canvas.size,
-        );
-
-        /**
-         * El cursor no está sobre ningún proyecto.
-         */
         if (!hoveredProject) {
             return;
         }
 
-        /**
-         * Coordenada real del proyecto.
-         */
         const projectPosition = {
-            x:
-                (hoveredProject.x / 100) *
-                container.canvas.size.width,
-
-            y:
-                (hoveredProject.y / 100) *
-                container.canvas.size.height,
+            x: (hoveredProject.x / 100) * container.canvas.size.width,
+            y: (hoveredProject.y / 100) * container.canvas.size.height,
         };
 
-        /**
-         * ============================================================
-         * FIX PRINCIPAL
-         * ============================================================
-         *
-         * `container.particles.quadTree` NO EXISTE en la versión actual
-         * de @tsparticles/engine (verificado contra el código fuente
-         * instalado: cero coincidencias de "quadTree" en todo el paquete).
-         *
-         * El motor usa un SpatialHashGrid expuesto como propiedad pública
-         * `grid`, con el mismo método `queryCircle(position, radius)`.
-         *
-         * Llamar a `.queryCircle` sobre `undefined` lanzaba un TypeError
-         * en cuanto el cursor pasaba sobre un proyecto, lo que podía
-         * interrumpir el loop de interactividad/animación — de ahí el
-         * comportamiento "a medias".
-         */
-        const affectedParticles =
-            container.particles.grid.queryCircle(
-                projectPosition,
-                this.repulseRadius,
-            );
+        // The engine uses a SpatialHashGrid exposed as `.grid`, not `.quadTree`.
+        const affectedParticles = container.particles.grid.queryCircle(
+            projectPosition,
+            this.repulseRadius,
+        );
 
         for (const particle of affectedParticles) {
-            /**
-             * No queremos empujar una manual particle de proyecto.
-             *
-             * Detectamos si la partícula está prácticamente
-             * encima de alguna posición de proyecto.
-             */
             if (this.isProjectParticle(particle)) {
                 continue;
             }
 
-            if (
-                particle.destroyed ||
-                particle.spawning
-            ) {
+            if (particle.destroyed || particle.spawning) {
                 continue;
             }
 
-            this.pushParticle(
-                particle,
-                projectPosition,
-                delta,
-            );
+            this.pushParticle(particle, projectPosition, delta);
         }
     }
 
-    /**
-     * ==========================================================
-     * DETECT PROJECT PARTICLES
-     * ==========================================================
-     *
-     * Ahora que las estrellas de proyecto se añaden con
-     * `group: "projects"` (ver addProjectParticles), podemos
-     * identificarlas directamente por su grupo — mucho más fiable
-     * que comparar distancias en píxeles contra la lista de
-     * proyectos.
-     */
     private isProjectParticle(particle: Particle): boolean {
         return particle.group === "projects";
     }
 
-    /**
-     * ==========================================================
-     * PUSH PARTICLE
-     * ==========================================================
-     */
     private pushParticle(
         particle: Particle,
         center: { x: number; y: number },
         delta: IDelta,
     ): void {
-        const dx =
-            particle.position.x - center.x;
-
-        const dy =
-            particle.position.y - center.y;
-
-        const distanceSquared =
-            dx * dx + dy * dy;
+        const dx = particle.position.x - center.x;
+        const dy = particle.position.y - center.y;
+        const distanceSquared = dx * dx + dy * dy;
 
         if (distanceSquared < 0.0001) {
             return;
         }
 
-        const distance =
-            Math.sqrt(distanceSquared);
+        const distance = Math.sqrt(distanceSquared);
 
-        if (
-            distance >= this.repulseRadius
-        ) {
+        if (distance >= this.repulseRadius) {
             return;
         }
 
-        /**
-         * 0 = centro
-         * 1 = borde del radio
-         */
-        const normalizedDistance =
-            distance / this.repulseRadius;
-
-        /**
-         * La fuerza es mucho mayor cerca del proyecto.
-         *
-         * IMPORTANTE: esto está en PÍXELES REALES por frame, no en
-         * "unidades de velocidad" -- ver el porqué justo abajo.
-         */
+        const normalizedDistance = distance / this.repulseRadius;
         const strength =
-            Math.pow(
-                1 - normalizedDistance,
-                2,
-            ) *
+            Math.pow(1 - normalizedDistance, 2) *
             this.pushPixelsPerFrame *
             delta.factor;
 
-        /**
-         * Vector normalizado desde el proyecto
-         * hacia la partícula.
-         */
         const nx = dx / distance;
         const ny = dy / distance;
 
-        /**
-         * ==========================================================
-         * FIX DE FONDO: `particle.velocity` NO son píxeles/frame
-         * ==========================================================
-         *
-         * Lo comprobé en el código fuente de @tsparticles/plugin-move:
-         * cada frame, el motor mueve la partícula así:
-         *
-         *   position += velocity * moveSpeed
-         *
-         * `velocity` es basicamente un vector de DIRECCIÓN (longitud
-         * ~1 en reposo), y `moveSpeed` (particle.retina.moveSpeed) es
-         * quien de verdad determina cuánto se desplaza cada frame. Las
-         * estrellas de fondo tienen moveSpeed ~0.03-0.18, los cometas
-         * ~7-12 -- una diferencia de hasta 100x.
-         *
-         * Antes sumábamos directamente a `velocity` y limitábamos su
-         * magnitud a un número fijo (o relativo a sí misma), sin tener
-         * en cuenta `moveSpeed`. Eso hacía que el MISMO empujón fuera
-         * casi imperceptible en una estrella lenta pero una sacudida
-         * violenta en un cometa (velocity boosteada x moveSpeed alto =
-         * desplazamiento real enorme) -- de ahí el "rebote" a toda
-         * velocidad.
-         *
-         * Ahora expresamos el empujón en píxeles REALES deseados y lo
-         * convertimos a las unidades internas de `velocity` dividiendo
-         * por `moveSpeed`, y el tope también se aplica sobre el
-         * desplazamiento real (velocity.length * moveSpeed), no sobre
-         * `velocity.length` a secas. Así el empujón se siente igual de
-         * fuerte en cualquier partícula, sea rápida o lenta.
-         */
+        // `velocity` is a direction vector (~length 1); `moveSpeed` scales it to real pixels/frame.
+        // Push in real-pixel units and divide by moveSpeed so the force feels equal on fast and slow particles.
         const moveSpeed = particle.retina.moveSpeed || 1;
 
         particle.velocity.x += (nx * strength) / moveSpeed;
         particle.velocity.y += (ny * strength) / moveSpeed;
 
-        const effectiveSpeed =
-            particle.velocity.length * moveSpeed;
+        const effectiveSpeed = particle.velocity.length * moveSpeed;
 
         if (effectiveSpeed > this.maxEffectivePixelsPerFrame) {
-            particle.velocity.length =
-                this.maxEffectivePixelsPerFrame / moveSpeed;
+            particle.velocity.length = this.maxEffectivePixelsPerFrame / moveSpeed;
         }
 
-        /**
-         * ==========================================================
-         * MARCAR PARA EL REGRESO (solo cometas)
-         * ==========================================================
-         *
-         * `move.trail` (el que usan los emitters de cometas en este
-         * archivo) NO es una propiedad real de tsParticles — lo
-         * comprobé contra la clase `Move` del motor: no existe. Se
-         * ignora en silencio, igual que pasaba con `density.area`.
-         *
-         * Así que para identificar "esto es un cometa" usamos otro
-         * rasgo que sí es fiable en este archivo: los cometas son las
-         * únicas partículas con `move.straight: true` (van en línea
-         * recta, dirección fija) — las estrellas de fondo usan
-         * `straight: false` + `random: true`, y las de proyecto no se
-         * mueven en absoluto.
-         */
+        // `move.straight: true` is the reliable discriminator for comets in this file.
         if (particle.options.move?.straight) {
-            cometReturnTargets.set(particle, {
-                x: center.x,
-                y: center.y,
-            });
+            cometReturnTargets.set(particle, { x: center.x, y: center.y });
         }
     }
 }
 
-/**
- * ============================================================
- * COMET RETURN (las estrellas fugaces vuelven a su estrella)
- * ============================================================
- *
- * Cuando una partícula con estela es empujada por
- * `ProjectRepulseInteractor`, queda registrada aquí junto con la
- * posición del proyecto que la empujó. Este updater, en cada
- * frame, tira suavemente de ella de vuelta hacia esa posición --
- * hasta que llega lo bastante cerca, momento en el que la
- * soltamos y sigue su camino con la velocidad que lleve en ese
- * instante.
- */
-const cometReturnTargets = new WeakMap<
-    Particle,
-    { x: number; y: number }
->();
+const cometReturnTargets = new WeakMap<Particle, { x: number; y: number }>();
 
-/**
- * ============================================================
- * DECAY DE VELOCIDAD EXTRA
- * ============================================================
- *
- * Cuando el repulse empuja una partícula, le añade velocidad
- * "extra" por encima de su ritmo natural. Antes esa velocidad se
- * quedaba ahí para siempre -- así que aunque el "regreso" la
- * guiara de vuelta a su sitio, seguía viajando igual de rápido y
- * se pasaba de largo una y otra vez (el efecto de rebote/pinball
- * que comentabas). Esta función reduce gradualmente ese exceso
- * de velocidad hacia el ritmo natural de la partícula
- * (`particle.initialVelocity`, su velocidad de nacimiento),
- * conservando la dirección -- solo frena, no redirige.
- */
 const restoreSpeedRate = 0.035;
 
-const decayExcessSpeed = (
-    particle: Particle,
-    delta: IDelta,
-): void => {
-    const naturalLength =
-        particle.initialVelocity?.length || 1;
+const decayExcessSpeed = (particle: Particle, delta: IDelta): void => {
+    const naturalLength = particle.initialVelocity?.length || 1;
     const currentLength = particle.velocity.length;
 
     if (currentLength > naturalLength) {
         particle.velocity.length =
             currentLength +
-            (naturalLength - currentLength) *
-            restoreSpeedRate *
-            delta.factor;
+            (naturalLength - currentLength) * restoreSpeedRate * delta.factor;
     }
 };
 
 class CometReturnUpdater {
-    /**
-     * En PÍXELES REALES por frame (por cada px de distancia que le
-     * falta por recorrer) -- ver la explicación de `pushParticle`
-     * sobre por qué esto ya no se expresa como "velocidad" a secas.
-     */
     private readonly pullPixelsPerFrame = 0.00045;
-
     private readonly arriveDistance = 24;
 
     init(): void { }
 
     isEnabled(particle: Particle): boolean {
-        return (
-            cometReturnTargets.has(particle) &&
-            !particle.destroyed
-        );
+        return cometReturnTargets.has(particle) && !particle.destroyed;
     }
 
     update(particle: Particle, delta: IDelta): void {
@@ -523,12 +257,6 @@ class CometReturnUpdater {
             return;
         }
 
-        /**
-         * Disipamos el exceso de velocidad SIEMPRE que esta
-         * partícula siga marcada, no solo mientras la guiamos de
-         * vuelta -- así deja de "volar" en cuanto llega, en vez de
-         * seguir a toda pastilla con la última dirección que tenía.
-         */
         decayExcessSpeed(particle, delta);
 
         const target = cometReturnTargets.get(particle);
@@ -541,11 +269,6 @@ class CometReturnUpdater {
         const dy = target.y - particle.position.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        /**
-         * Ya volvió lo bastante cerca: la soltamos y que siga su
-         * camino normal (ya con la velocidad ya casi recuperada
-         * gracias al decay de arriba).
-         */
         if (distance <= this.arriveDistance) {
             cometReturnTargets.delete(particle);
             return;
@@ -556,22 +279,17 @@ class CometReturnUpdater {
         const moveSpeed = particle.retina.moveSpeed || 1;
 
         particle.velocity.x +=
-            (nx * this.pullPixelsPerFrame * distance * delta.factor) /
-            moveSpeed;
+            (nx * this.pullPixelsPerFrame * distance * delta.factor) / moveSpeed;
 
         particle.velocity.y +=
-            (ny * this.pullPixelsPerFrame * distance * delta.factor) /
-            moveSpeed;
+            (ny * this.pullPixelsPerFrame * distance * delta.factor) / moveSpeed;
     }
 }
 
 const loadCometReturn = async () => {
     await tsParticles.pluginManager.register((engine) => {
         if (!engine.pluginManager.addParticleUpdater) {
-            console.error(
-                "[comet-return] addParticleUpdater no está disponible: " +
-                "revisa la versión de @tsparticles/engine.",
-            );
+            console.error("[comet-return] addParticleUpdater not available");
             return;
         }
 
@@ -582,40 +300,13 @@ const loadCometReturn = async () => {
     });
 };
 
-/**
- * ============================================================
- * COMET TRAIL (estela real, SOLO para cometas)
- * ============================================================
- *
- * tsParticles trae una opción `trail` de nivel superior
- * (`@tsparticles/plugin-trail`), pero es GLOBAL: pinta todo el
- * canvas con un rectángulo semitransparente en vez de limpiarlo,
- * así que difuminaría también las estrellas de fondo. Como
- * quieres la estela SOLO en las estrellas fugaces, la hacemos a
- * mano: cada cierto tiempo, un cometa "suelta" un punto fantasma
- * en su posición actual, que se encoge y desvanece con
- * `opacity.animation` / `size.animation` y se autodestruye con
- * `life` (count: 1, duration corta) — nunca se acumulan.
- *
- * Van a su propio grupo "comet-trail" con density.enable:false,
- * por el mismo motivo que el grupo "projects": si no, `setDensity()`
- * podría purgarlos por sorpresa en un resize (ver el bug de las
- * estrellas de proyecto invisibles, más arriba en la conversación).
- */
+// Trail dots are spawned as separate particles in the "comet-trail" group.
+// We do it manually (rather than @tsparticles/plugin-trail) so the fade
+// effect only applies to comets, not to the entire canvas.
 const cometTrailTimers = new WeakMap<Particle, number>();
 
 class CometTrailUpdater {
-    /**
-     * Cuanto más bajo, más densa/continua se ve la estela (más
-     * puntos por segundo). Súbelo si notas que "gotea" en vez de
-     * verse continua.
-     */
     private readonly spawnIntervalMs = 22;
-
-    /**
-     * Cuánto tarda cada punto de la estela en desvanecerse del
-     * todo, en segundos.
-     */
     private readonly trailDuration = 0.55;
 
     constructor(private readonly container: Container) { }
@@ -635,8 +326,7 @@ class CometTrailUpdater {
             return;
         }
 
-        const elapsed =
-            (cometTrailTimers.get(particle) ?? 0) + delta.value;
+        const elapsed = (cometTrailTimers.get(particle) ?? 0) + delta.value;
 
         if (elapsed < this.spawnIntervalMs) {
             cometTrailTimers.set(particle, elapsed);
@@ -645,39 +335,21 @@ class CometTrailUpdater {
 
         cometTrailTimers.set(particle, 0);
 
-        const cometSize =
-            (particle.size as { value?: number })?.value ?? 3;
+        const cometSize = (particle.size as { value?: number })?.value ?? 3;
         const cometColor =
-            (particle.options.color as { value?: unknown })?.value ??
-            "#ffffff";
+            (particle.options.color as { value?: unknown })?.value ?? "#ffffff";
 
         this.container.particles.addParticle(
             { x: particle.position.x, y: particle.position.y },
             {
                 shape: { type: "circle" },
-
                 move: { enable: false },
-
                 color: { value: cometColor },
 
-                /**
-                 * FIX: sin esto, los puntos de la estela HEREDAN la
-                 * configuración de `links` de las partículas base
-                 * (enable:true, distance:105). Como se generan muy
-                 * pegados entre sí siguiendo la línea recta del cometa,
-                 * el motor los enlazaba a todos entre sí con líneas casi
-                 * solapadas -> visualmente parecía un rayo/triángulo
-                 * sólido en vez de una estela de puntos sueltos.
-                 */
+                // Without this, trail dots inherit links from the base config and
+                // connect to each other — rendering as a solid ray instead of dots.
                 links: { enable: false },
 
-                /**
-                 * Igual de importante: si no lo desactivamos aquí, cada
-                 * punto de la estela también intenta el efecto de brillo
-                 * (twinkle) de las partículas base, añadiendo parpadeos
-                 * extra innecesarios sobre un efecto que ya de por sí
-                 * parpadea al nacer/morir constantemente.
-                 */
                 twinkle: { particles: { enable: false } },
 
                 size: {
@@ -715,10 +387,7 @@ class CometTrailUpdater {
 const loadCometTrail = async () => {
     await tsParticles.pluginManager.register((engine) => {
         if (!engine.pluginManager.addParticleUpdater) {
-            console.error(
-                "[comet-trail] addParticleUpdater no está disponible: " +
-                "revisa la versión de @tsparticles/engine.",
-            );
+            console.error("[comet-trail] addParticleUpdater not available");
             return;
         }
 
@@ -730,33 +399,12 @@ const loadCometTrail = async () => {
     });
 };
 
-/**
- * ============================================================
- * AMBIENT RETURN (rellenar los huecos que deja el repulse)
- * ============================================================
- *
- * Al empujar TODAS las estrellas cercanas a un proyecto, la zona
- * alrededor se queda vacía — y como las estrellas normales van
- * muy lentas (0.03-0.18px/frame) y con movimiento aleatorio,
- * tardan mucho en volver a rellenar ese hueco por sí solas.
- *
- * En vez de atarlas a un punto fijo (se vería robótico), les
- * damos una "zona libre" amplia alrededor de donde nacieron
- * (deadZoneRadius): dentro de esa zona no hacemos nada, vagan
- * con total libertad, igual que antes. Solo si se alejan MÁS de
- * esa zona (por ejemplo, empujadas por el repulse) empieza a
- * tirar de ellas suavemente hacia su vecindario de origen — así
- * el hueco se rellena solo en unos segundos, en vez de quedar
- * vacío indefinidamente.
- */
-const ambientHomePositions = new WeakMap<
-    Particle,
-    { x: number; y: number }
->();
+const ambientHomePositions = new WeakMap<Particle, { x: number; y: number }>();
 
 class AmbientReturnUpdater {
+    // Stars wander freely within this radius from their spawn point.
+    // Only stars pushed beyond it get pulled back — keeps the field looking natural.
     private readonly deadZoneRadius = 90;
-
     private readonly pullStrength = 0.00035;
 
     init(particle: Particle): void {
@@ -789,14 +437,6 @@ class AmbientReturnUpdater {
             return;
         }
 
-        /**
-         * Igual que en los cometas: disipamos el exceso de velocidad
-         * SIEMPRE, esté o no fuera de su zona libre. Antes una
-         * estrella empujada por el repulse conservaba esa velocidad
-         * extra indefinidamente, así que aunque el tirón la trajera
-         * de vuelta, seguía viajando mucho más rápido que su ritmo
-         * normal y se pasaba de largo constantemente.
-         */
         decayExcessSpeed(particle, delta);
 
         const home = ambientHomePositions.get(particle);
@@ -809,42 +449,27 @@ class AmbientReturnUpdater {
         const dy = home.y - particle.position.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        /**
-         * Dentro de su zona libre: no tocamos nada, que vague a sus
-         * anchas como siempre.
-         */
         if (distance <= this.deadZoneRadius) {
             return;
         }
 
-        /**
-         * Fuera de la zona libre: cuanto más lejos, más fuerte tira
-         * de vuelta (pero siempre suave, no debe notarse como una
-         * atadura). Convertido a píxeles reales igual que el push y
-         * el comet-return -- ver esa explicación más arriba.
-         */
         const excess = distance - this.deadZoneRadius;
         const nx = dx / distance;
         const ny = dy / distance;
         const moveSpeed = particle.retina.moveSpeed || 1;
 
         particle.velocity.x +=
-            (nx * this.pullStrength * excess * delta.factor) /
-            moveSpeed;
+            (nx * this.pullStrength * excess * delta.factor) / moveSpeed;
 
         particle.velocity.y +=
-            (ny * this.pullStrength * excess * delta.factor) /
-            moveSpeed;
+            (ny * this.pullStrength * excess * delta.factor) / moveSpeed;
     }
 }
 
 const loadAmbientReturn = async () => {
     await tsParticles.pluginManager.register((engine) => {
         if (!engine.pluginManager.addParticleUpdater) {
-            console.error(
-                "[ambient-return] addParticleUpdater no está disponible: " +
-                "revisa la versión de @tsparticles/engine.",
-            );
+            console.error("[ambient-return] addParticleUpdater not available");
             return;
         }
 
@@ -855,34 +480,9 @@ const loadAmbientReturn = async () => {
     });
 };
 
-/**
- * ============================================================
- * SPARKLE SHAPE
- * ============================================================
- *
- * 4-point "twinkle" glyph (N/E/S/W tips, concave sides) —
- * replaces the built-in 5-point `"star"` shape everywhere it
- * was used in this file.
- *
- * Drawn as 4 cubic Bézier curves: the control points for each
- * curve sit on the TWO tips' own axes, pulled toward the center
- * by `sparkleInset`. That's what produces the pinched, concave
- * "waist" between each pair of tips instead of straight edges.
- * Lower inset = sharper pinch (closer to an asterisk); higher
- * inset = fatter arms (closer to a rounded diamond).
- *
- * Registered via `engine.pluginManager.addShape`, NOT the
- * `addInteractor`/`addParticleUpdater` pattern used for the
- * other custom plugins above — shapes are a separate hook.
- * Verified against @tsparticles/shape-star's actual installed
- * source: the engine already wraps `draw()` in
- * `beginPath()`/`closePath()`/`fill()`/`stroke()` internally
- * (see RenderManager), so `draw()` here must ONLY build the
- * path — never call those itself. The canvas context is also
- * already translated/rotated to the particle's own position
- * before `draw()` runs, so everything below is relative to
- * origin (0, 0), same convention as the built-in drawers.
- */
+// 4-point sparkle shape drawn as cubic Bézier curves.
+// Control points sit on each tip's own axis, pulled toward center by `sparkleInset`,
+// which creates the concave pinch between tips instead of straight edges.
 const sparkleInset = 0.25;
 
 class SparkleDrawer implements IShapeDrawer {
@@ -891,10 +491,10 @@ class SparkleDrawer implements IShapeDrawer {
         const innerRadius = radius * sparkleInset;
 
         const tips: ICoordinates[] = [
-            { x: 0, y: -radius }, // top
-            { x: radius, y: 0 }, // right
-            { x: 0, y: radius }, // bottom
-            { x: -radius, y: 0 }, // left
+            { x: 0, y: -radius },
+            { x: radius, y: 0 },
+            { x: 0, y: radius },
+            { x: -radius, y: 0 },
         ];
 
         context.moveTo(tips[0].x, tips[0].y);
@@ -903,11 +503,6 @@ class SparkleDrawer implements IShapeDrawer {
             const current = tips[i];
             const next = tips[(i + 1) % tips.length];
 
-            /**
-             * Each control point rides its own tip's axis, scaled
-             * down toward the center — this is what creates the pinch
-             * instead of a straight line between tips.
-             */
             const controlCurrent = {
                 x: (current.x / radius) * innerRadius,
                 y: (current.y / radius) * innerRadius,
@@ -937,10 +532,7 @@ class SparkleDrawer implements IShapeDrawer {
 const loadSparkleShape = async () => {
     await tsParticles.pluginManager.register((engine) => {
         if (!engine.pluginManager.addShape) {
-            console.error(
-                "[sparkle-shape] addShape no está disponible: " +
-                "revisa la versión de @tsparticles/engine.",
-            );
+            console.error("[sparkle-shape] addShape not available");
             return;
         }
 
@@ -950,44 +542,16 @@ const loadSparkleShape = async () => {
     });
 };
 
-/**
- * ============================================================
- * REGISTER PROJECT REPULSE
- * ============================================================
- */
-/**
- * ============================================================
- * PROJECT TOOLTIP + CLICK
- * ============================================================
- *
- * tsParticles solo gestiona la física de las partículas — no
- * tiene ningún sistema de "elementos clicables" con nombre,
- * tooltip, etc. Eso lo montamos aparte con listeners nativos del
- * DOM sobre el propio <canvas> que genera `fullScreen`.
- *
- * Punto importante: `container.canvas.size` está en píxeles
- * "internos" del canvas (multiplicados por devicePixelRatio si
- * detectRetina está activo), mientras que `clientX/clientY` de
- * los eventos del ratón vienen en píxeles CSS. Hay que convertir
- * entre ambos sistemas usando el `getBoundingClientRect()` del
- * canvas — si no, en pantallas retina el hitbox de los proyectos
- * queda desplazado y parece que "no hace click".
- */
+// canvas.size uses retina (physical) pixels; clientX/Y are CSS pixels.
+// getBoundingClientRect() converts between them so hit detection is correct on HiDPI screens.
 const setupProjectInteraction = (container: Container) => {
     const canvasElement = container.canvas.domElement;
 
     if (!canvasElement) {
-        console.warn(
-            "[projects] No se encontró el elemento <canvas>; " +
-            "el card y el click de los proyectos no van a funcionar.",
-        );
+        console.warn("[projects] <canvas> not found; project interaction disabled");
         return;
     }
 
-    /**
-     * Convierte una coordenada de pantalla (clientX/Y) a
-     * coordenadas internas del canvas.
-     */
     const toCanvasPoint = (clientX: number, clientY: number) => {
         const rect = canvasElement.getBoundingClientRect();
         const canvasSize = container.canvas.size;
@@ -1010,11 +574,7 @@ const setupProjectInteraction = (container: Container) => {
             if (project.id !== lastHoveredId) {
                 lastHoveredId = project.id;
 
-                /**
-                 * Convert the project's canvas-percentage position to CSS
-                 * viewport coordinates so the card can anchor to the star,
-                 * not to the mouse.
-                 */
+                // Anchor card to the star position (canvas %), not to the cursor.
                 const rect = canvasElement.getBoundingClientRect();
                 const cssX = rect.left + (project.x / 100) * rect.width;
                 const cssY = rect.top + (project.y / 100) * rect.height;
@@ -1051,43 +611,12 @@ const setupProjectInteraction = (container: Container) => {
     });
 };
 
-/**
- * ============================================================
- * PROJECT ORBIT (movimiento sujeto a resorte)
- * ============================================================
- *
- * Queremos que las estrellas de proyecto se muevan un poco, pero
- * SIN salir nunca de pantalla. En vez de usar `move.enable` +
- * `outModes` (que las dejaría vagar libremente por todo el
- * canvas, perdiendo su posición de "marcador"), les damos
- * `move.enable: false` y las movemos nosotros mismos cada frame
- * con un updater personalizado:
- *
- * - Cada partícula "recuerda" su posición de origen (`home`),
- *   capturada la primera vez que se inicializa.
- * - Cada frame se le aplica un pequeño empujón aleatorio (da
- *   sensación de vida) más una fuerza de resorte que tira de
- *   vuelta hacia `home`.
- * - Como red de seguridad, si aun así se aleja más de
- *   `maxOrbitRadius` píxeles de su origen, se recorta la
- *   posición a ese radio. Y como red de seguridad ABSOLUTA, la
- *   posición final siempre se limita a los bordes del canvas.
- *
- * Se registra igual que cualquier updater oficial de tsParticles
- * (wobble, twinkle, etc.), vía `engine.pluginManager.addParticleUpdater`.
- */
-const projectHomePositions = new WeakMap<
-    Particle,
-    { x: number; y: number }
->();
+const projectHomePositions = new WeakMap<Particle, { x: number; y: number }>();
 
 class ProjectOrbitUpdater {
     private readonly maxOrbitRadius = 14;
-
     private readonly springStrength = 0.006;
-
     private readonly jitterStrength = 0.05;
-
     private readonly damping = 0.92;
 
     constructor(private readonly container: Container) { }
@@ -1097,12 +626,6 @@ class ProjectOrbitUpdater {
             return;
         }
 
-        /**
-         * Guardamos la posición de origen la primera vez que vemos
-         * esta partícula (justo cuando la creamos en
-         * `addProjectParticles`, así que su posición actual ES su
-         * posición "correcta").
-         */
         projectHomePositions.set(particle, {
             x: particle.position.x,
             y: particle.position.y,
@@ -1128,38 +651,24 @@ class ProjectOrbitUpdater {
             return;
         }
 
-        /**
-         * Empujoncito aleatorio constante -> sensación de vida.
-         */
         particle.velocity.x +=
             (Math.random() - 0.5) * this.jitterStrength * delta.factor;
 
         particle.velocity.y +=
             (Math.random() - 0.5) * this.jitterStrength * delta.factor;
 
-        /**
-         * Fuerza de resorte hacia la posición de origen: cuanto más
-         * lejos está, más fuerte tira hacia atrás.
-         */
         const dx = home.x - particle.position.x;
         const dy = home.y - particle.position.y;
 
         particle.velocity.x += dx * this.springStrength * delta.factor;
         particle.velocity.y += dy * this.springStrength * delta.factor;
 
-        /**
-         * Amortiguación: sin esto, oscilaría para siempre.
-         */
         particle.velocity.x *= this.damping;
         particle.velocity.y *= this.damping;
 
         particle.position.x += particle.velocity.x * delta.factor;
         particle.position.y += particle.velocity.y * delta.factor;
 
-        /**
-         * RED DE SEGURIDAD 1: nunca más lejos que `maxOrbitRadius`
-         * de su posición de origen.
-         */
         const offsetX = particle.position.x - home.x;
         const offsetY = particle.position.y - home.y;
         const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
@@ -1171,10 +680,6 @@ class ProjectOrbitUpdater {
             particle.position.y = home.y + offsetY * scale;
         }
 
-        /**
-         * RED DE SEGURIDAD 2 (absoluta): pase lo que pase, jamás
-         * fuera de los límites del canvas.
-         */
         const canvasSize = this.container.canvas.size;
 
         particle.position.x = Math.min(
@@ -1192,10 +697,7 @@ class ProjectOrbitUpdater {
 const loadProjectOrbit = async () => {
     await tsParticles.pluginManager.register((engine) => {
         if (!engine.pluginManager.addParticleUpdater) {
-            console.error(
-                "[project-orbit] addParticleUpdater no está disponible: " +
-                "revisa la versión de @tsparticles/engine.",
-            );
+            console.error("[project-orbit] addParticleUpdater not available");
             return;
         }
 
@@ -1212,20 +714,8 @@ const loadProjectRepulse = async () => {
     await loadInteractivityPlugin(tsParticles);
 
     await tsParticles.pluginManager.register((engine) => {
-        /**
-         * `addInteractor` puede no existir si el plugin de
-         * interactividad no llegó a registrarse (p. ej. por un error
-         * de carga silencioso en otro punto del bundle). Antes esto
-         * fallaba en silencio con `?.`; ahora avisamos por consola
-         * para que un fallo de este tipo no vuelva a pasar
-         * desapercibido.
-         */
         if (!engine.pluginManager.addInteractor) {
-            console.error(
-                "[project-repulse] addInteractor no está disponible: " +
-                "revisa que @tsparticles/plugin-interactivity esté " +
-                "correctamente instalado y cargado.",
-            );
+            console.error("[project-repulse] addInteractor not available");
             return;
         }
 
@@ -1240,46 +730,10 @@ const loadProjectRepulse = async () => {
     });
 };
 
-/**
- * ============================================================
- * PROJECT MANUAL PARTICLES — OPTIONS
- * ============================================================
- *
- * IMPORTANTE — HISTORIAL DEL BUG:
- *
- * Antes usábamos la opción declarativa `manualParticles` de
- * tsParticles. Sobre el papel es la forma "oficial" de añadir
- * partículas fijas, PERO tiene un problema serio verificado en el
- * código fuente del motor (@tsparticles/engine):
- *
- * 1. Las manualParticles se añaden SIN un `group` (quedan en el
- *    grupo `undefined`, el mismo que las estrellas de fondo).
- * 2. Cada vez que se recalcula la densidad — al cargar Y EN CADA
- *    RESIZE de ventana (`ParticlesManager.setDensity()`, llamado
- *    también desde `CanvasManager` en resize) — si "sobran"
- *    partículas respecto al target de densidad, el motor borra
- *    con `removeQuantity()`, que elimina EMPEZANDO DESDE EL
- *    ÍNDICE 0 del array de partículas del grupo.
- * 3. Como las manualParticles se insertan ANTES que las
- *    partículas aleatorias, quedan en los primeros índices —
- *    literalmente las primeras candidatas a ser borradas si el
- *    cálculo de densidad decide que hay demasiadas partículas
- *    para el tamaño de pantalla actual.
- *
- * Lo comprobé de forma empírica: con density.enable activado y
- * una ventana de tamaño moderado, las 4 estrellas de proyecto
- * desaparecían del array de partículas sin ningún error/warning
- * en consola — exactamente el síntoma reportado.
- *
- * LA SOLUCIÓN: añadimos los proyectos nosotros mismos, DESPUÉS
- * de que el container ya esté cargado (así el cálculo de
- * densidad de las estrellas normales ya se ha asentado), y en un
- * GRUPO PROPIO ("projects") con `density.enable: false`. El
- * grupo con densidad desactivada nunca entra en la lógica de
- * borrado — lo confirmé forzando manualmente una segunda pasada
- * de `setDensity()` (simulando un resize) y las 4 partículas
- * sobrevivieron intactas.
- */
+// Project particles are added imperatively after tsParticles.load() in their own
+// "projects" group with density.enable: false, so setDensity() (called on every resize)
+// never purges them. Declaring them as manualParticles would put them in index 0
+// of the default group and they'd be the first to be removed on density recalculation.
 const createProjectParticlesOptions = (_project: ProjectData) => ({
     shape: {
         type: "sparkle",
@@ -1324,15 +778,6 @@ const createProjectParticlesOptions = (_project: ProjectData) => ({
     },
 });
 
-/**
- * ============================================================
- * ADD PROJECT PARTICLES
- * ============================================================
- *
- * Se llama DESPUÉS de `tsParticles.load(...)`, nunca antes.
- * `getPosition` es la misma utilidad que usa internamente el
- * plugin de manual particles para convertir porcentaje -> px.
- */
 const addProjectParticles = (container: Container) => {
     for (const project of featuredProjects) {
         container.particles.addParticle(
@@ -1346,28 +791,7 @@ const addProjectParticles = (container: Container) => {
     }
 };
 
-/**
- * ============================================================
- * INIT
- * ============================================================
- */
-/**
- * ============================================================
- * WAIT FOR LAYOUT
- * ============================================================
- *
- * Con `fullScreen: true`, tsParticles necesita conocer el tamaño
- * real del canvas para posicionar las manualParticles (que son
- * porcentaje del canvas). Si el layout del navegador todavía no
- * está asentado en el instante de `tsParticles.load()`, el canvas
- * puede leerse como 0x0 en ese preciso tick, y como las manual
- * particles no se mueven ni se recalculan en resize, se quedan
- * clavadas en una posición inválida para siempre.
- *
- * Esperamos dos frames (raf x2) antes de inicializar: es
- * suficiente para que el navegador haya completado layout/paint
- * del canvas fullscreen recién insertado en el DOM.
- */
+// Two rAF ticks ensure layout is settled before tsParticles reads the canvas size.
 const waitForLayout = () =>
     new Promise<void>((resolve) => {
         requestAnimationFrame(() => {
@@ -1378,83 +802,20 @@ const waitForLayout = () =>
 const initSpace = async () => {
     await waitForLayout();
 
-    /**
-     * ==========================================================
-     * LOAD FULL
-     * ==========================================================
-     *
-     * IMPORTANTE: `loadFull` NO incluye el plugin de manual
-     * particles ni el plugin de trail (verificado en el código
-     * fuente de "tsparticles/browser/index.js"). Por eso los
-     * cargamos explícitamente justo debajo — eso ya lo tenías bien.
-     */
     await loadFull(tsParticles);
-
-    /**
-     * ==========================================================
-     * CUSTOM SHAPE
-     * ==========================================================
-     *
-     * Se registra ANTES de tsParticles.load(...), igual que el
-     * resto de plugins custom, para que la opción
-     * `shape: { type: "sparkle" }` ya esté disponible en cuanto se
-     * construyan las opciones del container.
-     */
     await loadSparkleShape();
-
-    /**
-     * ==========================================================
-     * CUSTOM REPULSE
-     * ==========================================================
-     */
     await loadProjectRepulse();
-
-    /**
-     * ==========================================================
-     * CUSTOM ORBIT
-     * ==========================================================
-     */
     await loadProjectOrbit();
-
-    /**
-     * ==========================================================
-     * COMET RETURN
-     * ==========================================================
-     */
     await loadCometReturn();
-
-    /**
-     * ==========================================================
-     * COMET TRAIL
-     * ==========================================================
-     */
     await loadCometTrail();
-
-    /**
-     * ==========================================================
-     * AMBIENT RETURN
-     * ==========================================================
-     */
     await loadAmbientReturn();
 
-    /**
-     * ==========================================================
-     * PARTICLES
-     * ==========================================================
-     */
     const container = await tsParticles.load({
         id: "stars",
 
         options: {
-            /**
-             * ======================================================
-             * CANVAS
-             * ======================================================
-             */
             fullScreen: {
-                enable: true,
-
-                zIndex: -1,
+                enable: false,
             },
 
             background: {
@@ -1465,83 +826,40 @@ const initSpace = async () => {
 
             detectRetina: true,
 
-            /**
-             * ======================================================
-             * MOTION
-             * ======================================================
-             */
             motion: {
                 disable: false,
-
                 reduce: true,
             },
 
-            /**
-             * ======================================================
-             * NORMAL STARS
-             * ======================================================
-             */
             particles: {
                 number: {
-                    value: 160,
+                    // Fixed total: density scaling OFF so this never multiplies by canvas area.
+                    // 800 across 4× viewport ≈ 200 visible at any time.
+                    value: 800,
 
                     density: {
-                        enable: true,
-
-                        /**
-                         * FIX: `area` no es una propiedad válida de las
-                         * opciones de densidad de tsParticles (verificado en
-                         * la clase ParticlesDensity del motor: solo existen
-                         * `width` y `height`, por defecto 1920x1080). Con
-                         * `area` el motor la ignoraba en silencio y usaba
-                         * esos defaults, lo que en ventanas más pequeñas que
-                         * 1920x1080 hacía que "sobraran" partículas y
-                         * disparaba el borrado de setDensity() — el
-                         * detonante del bug de los proyectos invisibles.
-                         */
-                        width: 1000,
-
-                        height: 1000,
+                        enable: false,
                     },
                 },
 
-                /**
-                 * Solo la forma sparkle en el grupo base — los puntos
-                 * circulares viven en el grupo "dots" (más abajo) con
-                 * su propio rango de tamaño, más pequeño que el de los
-                 * sparkles para que nunca se solapen visualmente.
-                 */
                 shape: {
                     type: "sparkle",
                 },
 
-                /**
-                 * Tamaño de las sparkles: siempre por encima del tope
-                 * máximo del grupo "dots" (0.9), así la distinción visual
-                 * se mantiene independientemente de los valores aleatorios.
-                 */
                 size: {
                     value: {
-                        min: 1.0,
-
-                        max: 2.5,
+                        min: 0.8,
+                        max: 3.5,
                     },
                 },
 
-                /**
-                 * Opacidad aleatoria.
-                 */
                 opacity: {
                     value: {
                         min: 0.15,
-
                         max: 0.75,
                     },
                 },
 
-                /**
-                 * Paleta espacial.
-                 */
                 color: {
                     value: [
                         "#ffffff",
@@ -1553,24 +871,16 @@ const initSpace = async () => {
                     ],
                 },
 
-                /**
-                 * ====================================================
-                 * STAR MOVEMENT
-                 * ====================================================
-                 */
                 move: {
                     enable: true,
 
                     speed: {
                         min: 0.03,
-
                         max: 0.18,
                     },
 
                     direction: "none",
-
                     random: true,
-
                     straight: false,
 
                     outModes: {
@@ -1578,92 +888,40 @@ const initSpace = async () => {
                     },
                 },
 
-                /**
-                 * ====================================================
-                 * CONSTELLATIONS
-                 * ====================================================
-                 */
                 links: {
                     enable: true,
-
                     distance: 105,
-
                     opacity: 0.075,
-
                     width: 0.5,
-
                     color: "#8b7cff",
                 },
 
-                /**
-                 * ====================================================
-                 * TWINKLE
-                 * ====================================================
-                 */
                 twinkle: {
                     particles: {
                         enable: true,
-
                         frequency: 0.025,
-
                         opacity: 1,
                     },
                 },
 
-                /**
-                 * ====================================================
-                 * BOUNCE
-                 * ====================================================
-                 */
                 bounce: {
-                    horizontal: {
-                        value: 1,
-                    },
-
-                    vertical: {
-                        value: 1,
-                    },
+                    horizontal: { value: 1 },
+                    vertical: { value: 1 },
                 },
 
-                /**
-                 * ====================================================
-                 * PROJECTS GROUP
-                 * ====================================================
-                 *
-                 * Grupo dedicado a las estrellas de proyecto, con la
-                 * densidad DESACTIVADA. Así quedan completamente fuera
-                 * del sistema de recuento/purga por densidad que usan
-                 * las estrellas de fondo (ver `addProjectParticles`).
-                 */
                 groups: {
+                    // density.enable: false keeps setDensity() from purging project particles on resize.
                     projects: {
                         number: {
                             value: 0,
-
-                            density: {
-                                enable: false,
-                            },
+                            density: { enable: false },
                         },
                     },
 
-                    /**
-                     * Puntos circulares de fondo — tamaño siempre por
-                     * debajo del mínimo de las sparkles (1.0) para que
-                     * la distinción visual sea consistente. Comparten todo
-                     * lo demás (color, movimiento, links, twinkle) con el
-                     * grupo base gracias a la herencia de tsParticles.
-                     */
                     dots: {
                         number: {
-                            value: 70,
-
-                            density: {
-                                enable: true,
-
-                                width: 1000,
-
-                                height: 1000,
-                            },
+                            value: 320,
+                            density: { enable: false },
                         },
 
                         shape: {
@@ -1672,54 +930,29 @@ const initSpace = async () => {
 
                         size: {
                             value: {
-                                min: 0.3,
-
-                                max: 0.9,
+                                min: 0.2,
+                                max: 1.2,
                             },
                         },
                     },
 
-                    /**
-                     * Puntos fantasma de la estela de los cometas — mismo
-                     * motivo: fuera del sistema de densidad para que
-                     * `setDensity()` no los purgue en un resize.
-                     */
                     "comet-trail": {
                         number: {
                             value: 0,
-
-                            density: {
-                                enable: false,
-                            },
+                            density: { enable: false },
                         },
                     },
                 },
             },
 
-            /**
-             * ======================================================
-             * PROJECTS
-             * ======================================================
-             *
-             * Los proyectos YA NO se declaran aquí como
-             * `manualParticles` — se añaden explícitamente después de
-             * `tsParticles.load(...)` mediante `addProjectParticles()`.
-             * Ver el comentario junto a `createProjectParticlesOptions`
-             * para la explicación completa del bug que esto soluciona.
-             */
-
-            /**
-             * ======================================================
-             * INTERACTIVITY
-             * ======================================================
-             */
             interactivity: {
-                detectsOn: "window",
+                // Required when canvas is offset from viewport origin (left: -50vw, top: -50vh)
+                // so mouse coords are converted via getBoundingClientRect(), not assumed to be window-relative.
+                detectsOn: "canvas",
 
                 events: {
                     onHover: {
                         enable: true,
-
                         mode: "project-repulse",
                     },
 
@@ -1729,246 +962,129 @@ const initSpace = async () => {
                 },
 
                 modes: {
-                    /**
-                     * Este objeto puede quedarse vacío.
-                     *
-                     * Nuestro interactor utiliza sus propios valores.
-                     */
                     "project-repulse": {},
                 },
             },
 
-            /**
-             * ======================================================
-             * COMETS
-             * ======================================================
-             */
             emitters: [
-                /**
-                 * ----------------------------------------------------
-                 * COMET RIGHT
-                 * ----------------------------------------------------
-                 */
                 {
                     name: "comet-right",
 
-                    position: {
-                        x: 0,
-
-                        y: 25,
-                    },
-
+                    position: { x: 0, y: 25 },
                     direction: "right",
 
                     size: {
                         width: 0,
-
                         height: 25,
-
                         mode: "percent",
                     },
 
                     rate: {
                         quantity: 1,
-
                         delay: 3.5,
                     },
 
                     particles: {
-                        shape: {
-                            type: "circle",
-                        },
+                        shape: { type: "circle" },
 
                         color: {
-                            value: [
-                                "#ffffff",
-                                "#c4b5fd",
-                                "#93c5fd",
-                            ],
+                            value: ["#ffffff", "#c4b5fd", "#93c5fd"],
                         },
 
                         size: {
-                            value: {
-                                min: 1.5,
-
-                                max: 3,
-                            },
+                            value: { min: 1.5, max: 3 },
                         },
 
                         opacity: {
-                            value: {
-                                min: 0.7,
-
-                                max: 1,
-                            },
+                            value: { min: 0.7, max: 1 },
                         },
 
                         move: {
                             enable: true,
-
                             direction: "right",
-
-                            speed: {
-                                min: 7,
-
-                                max: 11,
-                            },
-
+                            speed: { min: 7, max: 11 },
                             straight: true,
-
-                            outModes: {
-                                default: "destroy",
-                            },
+                            outModes: { default: "destroy" },
                         },
                     },
                 },
 
-                /**
-                 * ----------------------------------------------------
-                 * COMET LEFT
-                 * ----------------------------------------------------
-                 */
                 {
                     name: "comet-left",
 
-                    position: {
-                        x: 100,
-
-                        y: 70,
-                    },
-
+                    position: { x: 100, y: 70 },
                     direction: "left",
 
                     size: {
                         width: 0,
-
                         height: 20,
-
                         mode: "percent",
                     },
 
                     rate: {
                         quantity: 1,
-
                         delay: 5,
                     },
 
                     particles: {
-                        shape: {
-                            type: "circle",
-                        },
+                        shape: { type: "circle" },
 
                         color: {
-                            value: [
-                                "#ffffff",
-                                "#a78bfa",
-                                "#818cf8",
-                            ],
+                            value: ["#ffffff", "#a78bfa", "#818cf8"],
                         },
 
                         size: {
-                            value: {
-                                min: 1.5,
-
-                                max: 3,
-                            },
+                            value: { min: 1.5, max: 3 },
                         },
 
                         opacity: {
-                            value: {
-                                min: 0.7,
-
-                                max: 1,
-                            },
+                            value: { min: 0.7, max: 1 },
                         },
 
                         move: {
                             enable: true,
-
                             direction: "left",
-
-                            speed: {
-                                min: 8,
-
-                                max: 12,
-                            },
-
+                            speed: { min: 8, max: 12 },
                             straight: true,
-
-                            outModes: {
-                                default: "destroy",
-                            },
+                            outModes: { default: "destroy" },
                         },
                     },
                 },
 
-                /**
-                 * ----------------------------------------------------
-                 * COMET DIAGONAL
-                 * ----------------------------------------------------
-                 */
                 {
                     name: "comet-diagonal",
 
-                    position: {
-                        x: 15,
-
-                        y: 0,
-                    },
-
+                    position: { x: 15, y: 0 },
                     direction: "bottom-right",
 
                     size: {
                         width: 25,
-
                         height: 0,
-
                         mode: "percent",
                     },
 
                     rate: {
                         quantity: 1,
-
                         delay: 7,
                     },
 
                     particles: {
-                        shape: {
-                            type: "circle",
-                        },
+                        shape: { type: "circle" },
 
-                        color: {
-                            value: "#ffffff",
-                        },
+                        color: { value: "#ffffff" },
 
                         size: {
-                            value: {
-                                min: 1,
-
-                                max: 2.5,
-                            },
+                            value: { min: 1, max: 2.5 },
                         },
 
-                        opacity: {
-                            value: 0.9,
-                        },
+                        opacity: { value: 0.9 },
 
                         move: {
                             enable: true,
-
                             direction: "bottom-right",
-
-                            speed: {
-                                min: 6,
-
-                                max: 9,
-                            },
-
+                            speed: { min: 6, max: 9 },
                             straight: true,
-
-                            outModes: {
-                                default: "destroy",
-                            },
+                            outModes: { default: "destroy" },
                         },
                     },
                 },
@@ -1976,21 +1092,7 @@ const initSpace = async () => {
         },
     });
 
-    /**
-     * Añadimos las estrellas de proyecto AHORA, con el container ya
-     * completamente inicializado (canvas con tamaño real, densidad
-     * de las estrellas de fondo ya asentada). Al ir en el grupo
-     * "projects" (density.enable: false), quedan a salvo de futuras
-     * pasadas de setDensity() — incluidas las que se disparan en
-     * cada resize de ventana.
-     */
     if (container) {
-        /**
-         * Load featured projects from the JSON blob injected by
-         * index.astro, assign random positions within STAR_ZONE,
-         * then spawn the particles and wire up interaction.
-         * On pages without #star-projects this is a no-op.
-         */
         const raw = loadFeaturedProjects();
         const positions = generatePositions(raw.length);
 

@@ -61,9 +61,13 @@ const resolvedOgImage = ogImage
 
         <main class="relative h-dvh w-full overflow-hidden">
             <!-- STAR FIELD -->
+            <!-- 200vw×200vh oversized canvas — viewport sees the center half.
+                 The ±50vw/vh buffer gives room to translate during page transitions
+                 without exposing canvas edges. Clipped by <main overflow-hidden>. -->
             <div
                 id="stars"
-                class="pointer-events-none absolute inset-0 z-0 h-full w-full"
+                class="pointer-events-none absolute z-0"
+                style="left: -50vw; top: -50vh; width: 200vw; height: 200vh;"
                 aria-hidden="true"
                 transition:persist>
             </div>
