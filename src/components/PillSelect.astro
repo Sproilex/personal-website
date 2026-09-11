@@ -8,9 +8,11 @@ interface Props {
     name: string;
     options: Option[];
     defaultValue?: string;
+    "aria-label"?: string;
+    "aria-labelledby"?: string;
 }
 
-const { name, options, defaultValue } = Astro.props;
+const { name, options, defaultValue, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy } = Astro.props;
 ---
 
 <style>
@@ -38,7 +40,11 @@ const { name, options, defaultValue } = Astro.props;
     }
 </style>
 
-<div class="pill-select">
+<div
+    class="pill-select"
+    role="radiogroup"
+    aria-label={ariaLabel}
+    aria-labelledby={ariaLabelledBy}>
     {options.map((opt) => (
         <>
             <input

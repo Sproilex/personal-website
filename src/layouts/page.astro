@@ -53,6 +53,12 @@ const resolvedOgImage = ogImage
 
     <body
         class="m-0 h-dvh overflow-hidden bg-bg text-text scrollbar-thin scrollbar-thumb-text-highlight scrollbar-track-surface">
+        <a
+            href="#main-content"
+            class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-surface focus:border-2 focus:border-accent focus:text-text focus:outline-none">
+            Skip to content
+        </a>
+
         <main class="relative h-dvh w-full overflow-hidden">
             <!-- STAR FIELD -->
             <div
@@ -71,6 +77,7 @@ const resolvedOgImage = ogImage
             <Navbar />
 
             <div
+                id="main-content"
                 class="absolute flex w-full h-full z-10 top-0 left-0 lg:pl-[120px]">
                 <slot />
             </div>

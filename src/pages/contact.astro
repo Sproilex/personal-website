@@ -83,35 +83,41 @@ import { contactTransition } from "../transitions";
             </div>
         </section>
         <section
-            aria-labelledby="abilities"
+            aria-labelledby="contact-form-heading"
             class="abilities flex justify-center items-center w-full lg:w-[40%]">
-            <form class="flex flex-col gap-8 w-full">
+            <h2 id="contact-form-heading" class="sr-only">Contact form</h2>
+            <form class="flex flex-col gap-8 w-full" novalidate>
                 <div class="form-step">
-                    <span>01</span>
+                    <span aria-hidden="true">01</span>
                     <div>
-                        <label>Your Name</label>
+                        <label for="contact-name">Your Name</label>
                         <input
+                            id="contact-name"
                             type="text"
                             placeholder="Jane Doe"
+                            autocomplete="name"
                         />
                     </div>
                 </div>
                 <div class="form-step">
-                    <span>02</span>
+                    <span aria-hidden="true">02</span>
                     <div>
-                        <label>Email</label>
+                        <label for="contact-email">Email</label>
                         <input
+                            id="contact-email"
                             type="email"
                             placeholder="jane.doe@example.com"
+                            autocomplete="email"
                         />
                     </div>
                 </div>
                 <div class="form-step">
-                    <span>03</span>
+                    <span aria-hidden="true">03</span>
                     <div>
-                        <label>What do you need?</label>
+                        <label id="contact-needs-label">What do you need?</label>
                         <PillSelect
                             name="needs"
+                            aria-labelledby="contact-needs-label"
                             options={[
                                 {
                                     label: "Product build",
@@ -135,10 +141,11 @@ import { contactTransition } from "../transitions";
                     </div>
                 </div>
                 <div class="form-step">
-                    <span>04</span>
+                    <span aria-hidden="true">04</span>
                     <div>
-                        <label>Message</label>
+                        <label for="contact-message">Message</label>
                         <textarea
+                            id="contact-message"
                             placeholder="Write your message here..."
                             class="w-full bg-bg border-2 border-border rounded-md p-2 text-text h-[150px]"
                         ></textarea>

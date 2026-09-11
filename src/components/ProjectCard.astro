@@ -21,15 +21,16 @@ const {
 ---
 
 <article
-    class="min-w-[300px] w-100% rounded-lg border border-border overflow-hidden flex flex-col transition-all duration-300 hover:cursor-pointer hover:-translate-y-2">
+    class="min-w-[300px] w-100% rounded-lg border border-border overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2">
     <a
         href={caseStudyUrl}
+        aria-label={`${title} — case study`}
         class="relative h-fit shrink-0 bg-bg-secondary overflow-hidden">
         {
             image && (
                 <img
                     src={`/images/${image}`}
-                    alt={title}
+                    alt=""
                     class="w-full w-full object-cover object-top"
                 />
             )
@@ -73,6 +74,9 @@ const {
 
         <a
             href={caseStudyUrl}
+            aria-label={`${title} — case study`}
+            tabindex="-1"
+            aria-hidden="true"
             class="flex items-center gap-2 text-sm font-display tracking-widest uppercase text-text-highlight hover:scale-105 transition-all mt-auto pt-2">
             Case Study →
         </a>

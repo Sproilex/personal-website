@@ -208,10 +208,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     ::view-transition-old(page-content),
     ::view-transition-new(page-content) {
         animation: none !important;
+    }
+
+    #resume-modal[open],
+    #resume-modal.is-closing,
+    #resume-modal[open]::backdrop,
+    #resume-modal.is-closing::backdrop {
+        animation: none !important;
+    }
+
+    .btn {
+        @apply hover:scale-100;
     }
 }
 

@@ -38,7 +38,7 @@ const projects = await getCollection("projects");
 >
     <section
         class="flex flex-col h-full w-full px-4 sm:px-6 lg:pl-[4vw] lg:pr-[4vw] gap-6 lg:gap-8 pt-16 md:pt-[4vw]"
-        aria-labelledby="about-stiven"
+        aria-labelledby="hero-title"
         transition:name="page-content"
         transition:animate={projectsTransition}>
         <h1
@@ -51,6 +51,7 @@ const projects = await getCollection("projects");
         <PillSelect
             name="filter"
             defaultValue="all"
+            aria-label="Filter projects by category"
             options={[
                 { label: "All", value: "all" },
                 { label: "Product", value: "product" },
