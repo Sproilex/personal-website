@@ -1,6 +1,8 @@
 ---
 import "@fontsource/space-grotesk/600.css";
 import { Icon } from "astro-icon/components";
+import { Image } from "astro:assets";
+import logoIcon from "../assets/icon.png";
 
 const pathname = Astro.url.pathname;
 
@@ -43,8 +45,10 @@ const navLinks = [
         href="/"
         class="w-full flex justify-center"
         aria-label="Home">
-        <img
-            src="/images/icon.png"
+        <Image
+            src={logoIcon}
+            width={80}
+            alt=""
             class="w-[40px] my-8"
         />
     </a>
@@ -119,8 +123,10 @@ const navLinks = [
         href="/"
         class="flex justify-center px-6 py-6"
         aria-label="Home">
-        <img
-            src="/images/icon.png"
+        <Image
+            src={logoIcon}
+            width={80}
+            alt=""
             class="w-[40px]"
         />
     </a>
