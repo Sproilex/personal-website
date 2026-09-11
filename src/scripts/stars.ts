@@ -1093,20 +1093,37 @@ const initSpace = async () => {
     });
 
     if (container) {
-        const raw = loadFeaturedProjects();
-        const positions = generatePositions(raw.length);
-
-        featuredProjects = raw.map((p, i) => ({
-            ...p,
-            x: positions[i].x,
-            y: positions[i].y,
-        }));
-
-        if (featuredProjects.length > 0) {
-            addProjectParticles(container);
-            setupProjectInteraction(container);
-        }
+        starsContainer = container;
+        tryInitProjects(container);
     }
 };
+
+// Stored so astro:page-load can retry project init after navigating to home.
+let starsContainer: Container | undefined;
+let projectsInitialized = false;
+
+const tryInitProjects = (container: Container): void => {
+    if (projectsInitialized) return;
+
+    const raw = loadFeaturedProjects();
+    if (raw.length === 0) return;
+
+    const positions = generatePositions(raw.length);
+
+    featuredProjects = raw.map((p, i) => ({
+        ...p,
+        x: positions[i].x,
+        y: positions[i].y,
+    }));
+
+    addProjectParticles(container);
+    setupProjectInteraction(container);
+    projectsInitialized = true;
+};
+
+// On every navigation, retry in case the user just arrived at home for the first time.
+document.addEventListener("astro:page-load", () => {
+    if (starsContainer) tryInitProjects(starsContainer);
+});
 
 initSpace().catch(console.error);
