@@ -306,7 +306,7 @@ const loadCometReturn = async () => {
 const cometTrailTimers = new WeakMap<Particle, number>();
 
 class CometTrailUpdater {
-    private readonly spawnIntervalMs = 22;
+    private readonly spawnIntervalMs = 15;
     private readonly trailDuration = 0.55;
 
     constructor(private readonly container: Container) { }

@@ -3,6 +3,7 @@ import "../styles/global.css";
 import "@fontsource/space-grotesk/600.css";
 import Navbar from "../components/Navbar.astro";
 import ResumeModal from "../components/ResumeModal.astro";
+import StarProjectCard from "../components/StarProjectCard.astro";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
@@ -71,6 +72,8 @@ const resolvedOgImage = ogImage
                 aria-hidden="true"
                 transition:persist>
             </div>
+
+            <StarProjectCard transition:persist />
 
             <!-- BACKGROUND ATMOSPHERE -->
             <div

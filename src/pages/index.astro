@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import Page from "../layouts/page.astro";
-import StarProjectCard from "../components/StarProjectCard.astro";
 import { homeTransition } from "../transitions";
 
 const featuredProjects = (await getCollection("projects"))
@@ -16,7 +15,6 @@ const featuredProjects = (await getCollection("projects"))
 ---
 
 <Page>
-    <StarProjectCard />
     <script
         type="application/json"
         id="star-projects"
