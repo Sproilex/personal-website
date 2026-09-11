@@ -23,7 +23,10 @@ import { aboutTransition } from "../transitions";
     }
 </style>
 
-<Page>
+<Page
+    title="About — Stiven Ilarraza"
+    description="Software engineer with 8+ years shipping full-stack products. I build from schema and API to the pixels people actually touch."
+>
     <div
         class="flex flex-col lg:flex-row w-full lg:ml-[4vw] gap-4 lg:pr-[120px] overflow-y-auto lg:overflow-visible pt-20 lg:pt-0 pb-8 lg:pb-0 px-6 lg:px-0 lg:h-full"
         transition:name="page-content"
@@ -34,6 +37,7 @@ import { aboutTransition } from "../transitions";
             <div class="flex w-full items-center lg:h-full">
                 <div class="flex flex-col gap-8">
                     <h1
+                        id="about-stiven"
                         class="font-display text-base text-text-highlight uppercase leading-[0.82]">
                         About
                     </h1>
@@ -48,9 +52,9 @@ import { aboutTransition } from "../transitions";
                     </p>
 
                     <div class="flex gap-8">
-                        <button class="btn btn-primary"> Get in Touch </button>
+                        <a href="/contact" class="btn btn-primary"> Get in Touch </a>
 
-                        <button class="btn"> See Projects </button>
+                        <a href="/projects" class="btn"> See Projects </a>
                     </div>
                 </div>
             </div>

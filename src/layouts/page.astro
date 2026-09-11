@@ -3,6 +3,23 @@ import "../styles/global.css";
 import "@fontsource/space-grotesk/600.css";
 import Navbar from "../components/Navbar.astro";
 import { ClientRouter } from "astro:transitions";
+
+interface Props {
+    title?: string;
+    description?: string;
+    ogImage?: string;
+}
+
+const {
+    title = "Stiven Ilarraza — Software Engineer",
+    description = "Software engineer with over 8 years of experience building products, systems, and digital experiences across the stack.",
+    ogImage,
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const resolvedOgImage = ogImage
+    ? new URL(ogImage, Astro.site).href
+    : undefined;
 ---
 
 <html lang="en">
@@ -10,13 +27,26 @@ import { ClientRouter } from "astro:transitions";
         <meta charset="UTF-8" />
         <meta
             name="viewport"
-            content="width=device-width"
+            content="width=device-width, initial-scale=1"
         />
-        <meta
-            name="description"
-            content="Stiven Ilarraza — Software Engineer"
-        />
-        <title>Stiven Ilarraza — Software Engineer</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        <!-- Open Graph -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:site_name" content="Stiven Ilarraza" />
+        {resolvedOgImage && <meta property="og:image" content={resolvedOgImage} />}
+
+        <!-- Twitter / X -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        {resolvedOgImage && <meta name="twitter:image" content={resolvedOgImage} />}
+
+        <title>{title}</title>
         <ClientRouter />
     </head>
 

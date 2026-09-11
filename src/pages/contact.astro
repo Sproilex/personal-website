@@ -29,17 +29,21 @@ import { contactTransition } from "../transitions";
     }
 </style>
 
-<Page>
+<Page
+    title="Contact — Stiven Ilarraza"
+    description="Got a product to build, an issue to sort out, or a role to fill? Get in touch — I read everything and reply within a day."
+>
     <div
         class="flex flex-col lg:flex-row w-full lg:ml-[4vw] lg:mr-[4vw] gap-8 md:gap-16 overflow-y-auto lg:overflow-visible pt-20 lg:pt-0 pb-8 lg:pb-0 px-6 lg:px-0 lg:h-full"
         transition:name="page-content"
         transition:animate={contactTransition}>
         <section
             class="w-full lg:w-[60%]"
-            aria-labelledby="about-stiven">
+            aria-labelledby="contact-heading">
             <div class="flex w-full items-center lg:h-full">
                 <div class="flex flex-col gap-8">
                     <h1
+                        id="contact-heading"
                         class="font-display text-base text-text-highlight uppercase leading-[0.82]">
                         Contact
                     </h1>
