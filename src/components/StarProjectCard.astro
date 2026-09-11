@@ -86,6 +86,7 @@
     }, { once: true });
 
     window.addEventListener("project-hover", (e: Event) => {
+        if (window.location.pathname !== "/") return;
         const el = card();
         if (!el) return;
 
