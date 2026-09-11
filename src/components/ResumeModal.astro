@@ -40,6 +40,10 @@ import { Icon } from "astro-icon/components";
         }
     }
 
+    #resume-modal {
+        top: 0;
+        bottom: 0;
+    }
     #resume-modal[open] {
         animation: resume-slide-in 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)
             both;
@@ -58,7 +62,7 @@ import { Icon } from "astro-icon/components";
 <dialog
     id="resume-modal"
     aria-labelledby="resume-modal-title"
-    class="m-auto w-full max-w-4xl max-h-[90dvh] rounded-xl border-2 border-border bg-surface p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm open:flex open:flex-col">
+    class="m-auto w-[calc(100%-2rem)] sm:w-full max-w-4xl max-h-[90dvh] rounded-xl border-2 border-border bg-surface p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm open:flex open:flex-col">
     <!-- Header -->
     <div
         class="flex items-center justify-between border-b-2 border-border px-6 py-4 shrink-0">
