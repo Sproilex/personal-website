@@ -29,48 +29,60 @@ import { loadFull } from "tsparticles";
 const projects = [
     {
         id: "project-01",
-        title: "Project Alpha",
+        title: "MakeIt Tool",
+        description: "Realtime SEO intelligence platform dashboard.",
+        href: "/projects/makeit",
+        thumbnail: "/images/MakeIt - Hero.jpg",
 
         x: 72,
         y: 24,
 
         color: "#a78bfa",
-        size: 9,
+        size: 18,
     },
 
     {
         id: "project-02",
-        title: "Project Nebula",
+        title: "S.A.R.A.",
+        description: "B2B platform for the remodeling and real estate industry.",
+        href: "/projects/sara",
+        thumbnail: "/images/SARA - Hero.jpg",
 
-        x: 84,
+        x: 80,
         y: 62,
 
         color: "#818cf8",
-        size: 11,
+        size: 18,
     },
 
     {
         id: "project-03",
         title: "Project Orbit",
+        description: "Coming soon.",
+        href: "#",
 
-        x: 58,
-        y: 78,
+        x: 55,
+        y: 75,
 
         color: "#c4b5fd",
-        size: 8,
+        size: 18,
     },
 
     {
         id: "project-04",
         title: "Project Nova",
+        description: "Coming soon.",
+        href: "#",
 
-        x: 36,
-        y: 34,
+        x: 58,
+        y: 43,
 
         color: "#93c5fd",
-        size: 10,
+        size: 18,
     },
 ];
+
+const projectStarSize = 18;
 
 /**
  * ============================================================
@@ -923,28 +935,10 @@ const setupProjectInteraction = (container: Container) => {
     if (!canvasElement) {
         console.warn(
             "[projects] No se encontró el elemento <canvas>; " +
-            "el tooltip y el click de los proyectos no van a funcionar.",
+            "el card y el click de los proyectos no van a funcionar.",
         );
         return;
     }
-
-    const tooltip = document.createElement("div");
-
-    tooltip.style.position = "fixed";
-    tooltip.style.pointerEvents = "none";
-    tooltip.style.padding = "6px 10px";
-    tooltip.style.borderRadius = "6px";
-    tooltip.style.background = "rgba(10, 8, 20, 0.85)";
-    tooltip.style.color = "#f5f3ff";
-    tooltip.style.font = "13px system-ui, sans-serif";
-    tooltip.style.border = "1px solid rgba(255, 255, 255, 0.15)";
-    tooltip.style.transform = "translate(-50%, -140%)";
-    tooltip.style.transition = "opacity 0.12s ease";
-    tooltip.style.opacity = "0";
-    tooltip.style.zIndex = "9999";
-    tooltip.style.whiteSpace = "nowrap";
-
-    document.body.appendChild(tooltip);
 
     /**
      * Convierte una coordenada de pantalla (clientX/Y) a
@@ -960,19 +954,40 @@ const setupProjectInteraction = (container: Container) => {
         };
     };
 
+    let lastHoveredId: string | undefined;
+
     window.addEventListener("mousemove", (event) => {
         const point = toCanvasPoint(event.clientX, event.clientY);
         const project = findProjectAtPoint(point, container.canvas.size);
 
         if (project) {
-            tooltip.textContent = project.title;
-            tooltip.style.left = `${event.clientX}px`;
-            tooltip.style.top = `${event.clientY}px`;
-            tooltip.style.opacity = "1";
             canvasElement.style.cursor = "pointer";
+
+            if (project.id !== lastHoveredId) {
+                lastHoveredId = project.id;
+
+                /**
+                 * Convert the project's canvas-percentage position to CSS
+                 * viewport coordinates so the card can anchor to the star,
+                 * not to the mouse.
+                 */
+                const rect = canvasElement.getBoundingClientRect();
+                const cssX = rect.left + (project.x / 100) * rect.width;
+                const cssY = rect.top + (project.y / 100) * rect.height;
+
+                window.dispatchEvent(
+                    new CustomEvent("project-hover", {
+                        detail: { project, cssX, cssY },
+                    }),
+                );
+            }
         } else {
-            tooltip.style.opacity = "0";
             canvasElement.style.cursor = "";
+
+            if (lastHoveredId !== undefined) {
+                lastHoveredId = undefined;
+                window.dispatchEvent(new CustomEvent("project-hover-end"));
+            }
         }
     });
 
@@ -984,16 +999,6 @@ const setupProjectInteraction = (container: Container) => {
             return;
         }
 
-        /**
-         * Aquí decides qué hacer al hacer click sobre un proyecto:
-         * navegar a su página, abrir un modal, etc. Para no acoplar
-         * este archivo a tu router/UI, disparamos un CustomEvent que
-         * el resto de tu app puede escuchar donde le convenga:
-         *
-         *   window.addEventListener("project-click", (e) => {
-         *     console.log(e.detail.id, e.detail.title);
-         *   });
-         */
         window.dispatchEvent(
             new CustomEvent("project-click", {
                 detail: { id: project.id, title: project.title },
@@ -1247,7 +1252,7 @@ const createProjectParticlesOptions = (project: (typeof projects)[number]) => ({
      * Tamaño.
      */
     size: {
-        value: project.size,
+        value: projectStarSize,
     },
 
     /**
@@ -1467,7 +1472,7 @@ const initSpace = async () => {
              */
             particles: {
                 number: {
-                    value: 125,
+                    value: 160,
 
                     density: {
                         enable: true,
@@ -1490,26 +1495,25 @@ const initSpace = async () => {
                 },
 
                 /**
-                 * Estrellas + pequeños puntos.
-                 *
-                 * "sparkle" sustituye a "star" — es la forma custom de 4
-                 * puntas registrada arriba (loadSparkleShape).
+                 * Solo la forma sparkle en el grupo base — los puntos
+                 * circulares viven en el grupo "dots" (más abajo) con
+                 * su propio rango de tamaño, más pequeño que el de los
+                 * sparkles para que nunca se solapen visualmente.
                  */
                 shape: {
-                    type: [
-                        "sparkle",
-                        "circle",
-                    ],
+                    type: "sparkle",
                 },
 
                 /**
-                 * Tamaño pequeño.
+                 * Tamaño de las sparkles: siempre por encima del tope
+                 * máximo del grupo "dots" (0.9), así la distinción visual
+                 * se mantiene independientemente de los valores aleatorios.
                  */
                 size: {
                     value: {
-                        min: 0.6,
+                        min: 1.0,
 
-                        max: 2.1,
+                        max: 2.5,
                     },
                 },
 
@@ -1627,6 +1631,39 @@ const initSpace = async () => {
 
                             density: {
                                 enable: false,
+                            },
+                        },
+                    },
+
+                    /**
+                     * Puntos circulares de fondo — tamaño siempre por
+                     * debajo del mínimo de las sparkles (1.0) para que
+                     * la distinción visual sea consistente. Comparten todo
+                     * lo demás (color, movimiento, links, twinkle) con el
+                     * grupo base gracias a la herencia de tsParticles.
+                     */
+                    dots: {
+                        number: {
+                            value: 70,
+
+                            density: {
+                                enable: true,
+
+                                width: 1000,
+
+                                height: 1000,
+                            },
+                        },
+
+                        shape: {
+                            type: "circle",
+                        },
+
+                        size: {
+                            value: {
+                                min: 0.3,
+
+                                max: 0.9,
                             },
                         },
                     },

@@ -1,0 +1,156 @@
+---
+// No props — driven entirely by project-hover / project-hover-end CustomEvents
+// dispatched from stars.ts when the cursor enters or leaves a project star.
+---
+
+<a
+    id="star-project-card"
+    href="#"
+    tabindex="-1"
+    aria-hidden="true"
+    class="fixed z-[9999] w-64 rounded-lg border border-border bg-surface flex flex-col overflow-hidden opacity-0 pointer-events-none transition-opacity duration-150"
+>
+    <!-- Per-project color accent strip -->
+    <div id="star-project-card-accent" class="h-0.5 w-full shrink-0"></div>
+
+    <!-- Thumbnail (hidden when no thumbnail URL is provided) -->
+    <div
+        id="star-project-card-thumb"
+        class="w-full aspect-video bg-surface-2 overflow-hidden shrink-0 hidden"
+    >
+        <img
+            id="star-project-card-img"
+            src=""
+            alt=""
+            class="w-full h-full object-cover object-top"
+        />
+    </div>
+
+    <!-- Body -->
+    <div class="flex flex-col gap-2 p-4">
+        <h3
+            id="star-project-card-title"
+            class="font-display text-sm font-semibold text-text leading-tight"
+        ></h3>
+        <p
+            id="star-project-card-desc"
+            class="text-xs text-text-muted leading-relaxed line-clamp-2"
+        ></p>
+        <span
+            class="flex items-center gap-1 text-xs font-display tracking-widest uppercase text-text-highlight transition-all mt-1 pt-2 border-t border-border"
+        >
+            View project →
+        </span>
+    </div>
+</a>
+
+<script>
+    const card = document.getElementById(
+        "star-project-card",
+    ) as HTMLAnchorElement | null;
+
+    if (!card) throw new Error("[star-project-card] element not found");
+
+    const accentEl = document.getElementById(
+        "star-project-card-accent",
+    ) as HTMLDivElement;
+    const thumbWrapper = document.getElementById(
+        "star-project-card-thumb",
+    ) as HTMLDivElement;
+    const thumbImg = document.getElementById(
+        "star-project-card-img",
+    ) as HTMLImageElement;
+    const titleEl = document.getElementById(
+        "star-project-card-title",
+    ) as HTMLHeadingElement;
+    const descEl = document.getElementById(
+        "star-project-card-desc",
+    ) as HTMLParagraphElement;
+
+    let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
+    function show() {
+        card!.classList.remove("opacity-0", "pointer-events-none");
+        card!.removeAttribute("aria-hidden");
+        card!.removeAttribute("tabindex");
+    }
+
+    function hide() {
+        card!.classList.add("opacity-0", "pointer-events-none");
+        card!.setAttribute("aria-hidden", "true");
+        card!.setAttribute("tabindex", "-1");
+    }
+
+    function scheduleHide() {
+        clearHideTimer();
+        hideTimer = setTimeout(hide, 150);
+    }
+
+    function clearHideTimer() {
+        if (hideTimer !== null) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+    }
+
+    // Keep card visible when the user moves from the star onto the card.
+    card.addEventListener("mouseenter", clearHideTimer);
+    card.addEventListener("mouseleave", scheduleHide);
+
+    window.addEventListener("project-hover", (e: Event) => {
+        const { project, cssX, cssY } = (
+            e as CustomEvent<{
+                project: {
+                    id: string;
+                    title: string;
+                    description: string;
+                    href: string;
+                    thumbnail?: string;
+                    color: string;
+                };
+                cssX: number;
+                cssY: number;
+            }>
+        ).detail;
+
+        clearHideTimer();
+
+        // Populate content before measuring so offsetHeight is accurate.
+        card.href = project.href;
+        accentEl.style.backgroundColor = project.color;
+        titleEl.textContent = project.title;
+        descEl.textContent = project.description;
+
+        if (project.thumbnail) {
+            thumbImg.src = project.thumbnail;
+            thumbImg.alt = project.title;
+            thumbWrapper.classList.remove("hidden");
+        } else {
+            thumbWrapper.classList.add("hidden");
+        }
+
+        // Measure height while the card is still opacity-0 (still in layout).
+        const CARD_W = 256; // w-64
+        const GAP = 20;
+        const cardH = card.offsetHeight;
+
+        const margin = 8;
+        let left = cssX - CARD_W / 2;
+        let top = cssY - cardH - GAP;
+
+        // Horizontal clamp to viewport edges.
+        left = Math.max(margin, Math.min(left, window.innerWidth - CARD_W - margin));
+
+        // Flip below the star if there's not enough room above.
+        if (top < margin) top = cssY + GAP;
+
+        card.style.left = `${left}px`;
+        card.style.top = `${top}px`;
+
+        show();
+    });
+
+    window.addEventListener("project-hover-end", () => {
+        scheduleHide();
+    });
+</script>
