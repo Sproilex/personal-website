@@ -93,6 +93,7 @@ import { contactTransition } from "../transitions";
                         <label for="contact-name">Your Name</label>
                         <input
                             id="contact-name"
+                            name="name"
                             type="text"
                             placeholder="Jane Doe"
                             autocomplete="name"
@@ -105,6 +106,7 @@ import { contactTransition } from "../transitions";
                         <label for="contact-email">Email</label>
                         <input
                             id="contact-email"
+                            name="email"
                             type="email"
                             placeholder="jane.doe@example.com"
                             autocomplete="email"
@@ -146,6 +148,7 @@ import { contactTransition } from "../transitions";
                         <label for="contact-message">Message</label>
                         <textarea
                             id="contact-message"
+                            name="message"
                             placeholder="Write your message here..."
                             class="w-full bg-bg border-2 border-border rounded-md p-2 text-text h-[150px]"
                         ></textarea>
@@ -155,11 +158,12 @@ import { contactTransition } from "../transitions";
                     class="flex flex-col sm:flex-row items-center justify-between gap-4 pl-8">
                     <button
                         type="submit"
+                        id="contact-submit"
                         class="btn btn-primary">
                         Send Message
                     </button>
 
-                    <span class="align-middle text-sm text-text-muted">
+                    <span id="contact-status" class="align-middle text-sm text-text-muted">
                         Usually answered within 24 hours
                     </span>
                 </div>
@@ -167,3 +171,31 @@ import { contactTransition } from "../transitions";
         </section>
     </div>
 </Page>
+
+<script>
+    document.addEventListener('astro:page-load', () => {
+        const form = document.querySelector<HTMLFormElement>('form');
+        const btn = document.querySelector<HTMLButtonElement>('#contact-submit');
+        const status = document.querySelector<HTMLElement>('#contact-status');
+        if (!form || !btn || !status) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            status.textContent = '';
+
+            const res = await fetch('/api/contact', { method: 'POST', body: new FormData(form) });
+
+            if (res.ok) {
+                form.reset();
+                btn.textContent = 'Sent!';
+                status.textContent = 'Message received — talk soon.';
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Send Message';
+                status.textContent = 'Something went wrong. Try again.';
+            }
+        });
+    });
+</script>

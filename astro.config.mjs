@@ -2,18 +2,17 @@
 import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
-
 import sitemap from '@astrojs/sitemap';
-
 import tailwindcss from '@tailwindcss/vite';
-
 import icon from 'astro-icon';
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://stivenilarraza.com',
+  output: 'hybrid',
+  adapter: vercel(),
   integrations: [react(), sitemap(), icon()],
-
   vite: {
     plugins: [tailwindcss()]
   }
