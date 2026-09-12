@@ -3,6 +3,7 @@ import Page from "../../layouts/page.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection, render } from "astro:content";
 import { detailTransition } from "../../transitions";
+import PdfModal from "../../components/PdfModal.astro";
 
 export async function getStaticPaths() {
     const projects = await getCollection("projects");
@@ -110,17 +111,15 @@ const {
 
                     {
                         mockupFile && (
-                            <a
-                                href={`/mockups/${mockupFile}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="btn btn-primary flex items-center gap-2">
+                            <button
+                                data-mockup-trigger
+                                class="btn btn-primary flex items-center gap-2 w-fit">
                                 <Icon
                                     name="mdi:file-pdf-box"
                                     class="w-4 h-4"
                                 />
-                                View Mockup (PDF)
-                            </a>
+                                View Mockup
+                            </button>
                         )
                     }
                 </div>
@@ -290,5 +289,18 @@ const {
     initTechStackModal();
     document.addEventListener("astro:page-load", initTechStackModal);
 </script>
+
+{
+    mockupFile && (
+        <PdfModal
+            id="mockup-modal"
+            title="Project Mockup"
+            src={`/mockups/${mockupFile}`}
+            downloadHref={`/mockups/${mockupFile}`}
+            shareTitle={`${title} — Mockup`}
+            triggerAttribute="mockup-trigger"
+        />
+    )
+}
 
 </Page>

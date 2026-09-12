@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import "@fontsource/space-grotesk/600.css";
 import Navbar from "../components/Navbar.astro";
-import ResumeModal from "../components/ResumeModal.astro";
+import PdfModal from "../components/PdfModal.astro";
 import StarProjectCard from "../components/StarProjectCard.astro";
 import { ClientRouter } from "astro:transitions";
 
@@ -90,7 +90,14 @@ const resolvedOgImage = ogImage
             </div>
         </main>
 
-        <ResumeModal />
+        <PdfModal
+            id="resume-modal"
+            title="Resume"
+            src="/Resume_StivenIlarraza.pdf"
+            downloadHref="/Resume_StivenIlarraza.pdf"
+            shareTitle="Stiven Ilarraza — Resume"
+            triggerAttribute="resume-trigger"
+        />
 
         <script>
             import "../scripts/stars";
