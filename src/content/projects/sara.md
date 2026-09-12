@@ -40,7 +40,7 @@ image: "SARA - Hero.jpg"
 slug: "sara"
 featuredProject: true
 styledTitle: "S<span class='text-text-highlight'>.</span>A<span class='text-text-highlight'>.</span>R<span class='text-text-highlight'>.</span>A<span class='text-text-highlight'>.</span>"
-team: "4 engineers · 1 designer"
+team: "3 engineers"
 problem: "Fragmented operational workflows required repetitive manual work across disconnected tools."
 outcome: "A centralized platform for automating operational workflows across the business."
 impact: "Reduced manual human intervention by 40% to 60% across key processes."
