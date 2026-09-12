@@ -48,7 +48,7 @@ const { id, title, src, downloadHref, shareTitle, triggerAttribute } = Astro.pro
         const shareLabel = dialog.querySelector<HTMLElement>(".pdf-modal-share-label");
 
         if (iframe) {
-            const src = iframe.dataset.pdfSrc ?? "";
+            const src = (iframe.dataset.pdfSrc ?? "") + "#toolbar=0&navpanes=0&scrollbar=0";
             const observer = new MutationObserver(() => {
                 if (dialog.open && iframe.src !== src) iframe.src = src;
             });
