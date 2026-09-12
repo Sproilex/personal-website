@@ -22,7 +22,8 @@ const projects = defineCollection({
         problem: z.string().optional(),
         outcome: z.string().optional(),
         impact: z.string().optional(),
-        mockupUrl: z.string().optional(),
+        stack: z.string().optional(),
+        mockupFile: z.string().optional(),
         liveUrl: z.string().optional(),
     }),
 });
