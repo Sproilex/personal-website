@@ -1,6 +1,6 @@
 ---
 title: MakeIt Tool
-description: SEO analytics platform that aggregates domain and keyword intelligence into a single real-time dashboard.
+description: SEO analytics platform simplified into a single real-time dashboard.
 role: Lead Software Engineer & Technical Lead
 type: Full Time
 company: Confidential B2B
