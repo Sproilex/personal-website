@@ -86,7 +86,7 @@ import { contactTransition } from "../transitions";
             aria-labelledby="contact-form-heading"
             class="abilities flex justify-center items-center w-full lg:w-[40%]">
             <h2 id="contact-form-heading" class="sr-only">Contact form</h2>
-            <form class="flex flex-col gap-8 w-full" novalidate>
+            <form class="flex flex-col gap-8 w-full" action="/api/contact" method="POST" novalidate>
                 <div class="form-step">
                     <span aria-hidden="true">01</span>
                     <div>

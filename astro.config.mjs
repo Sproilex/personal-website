@@ -10,7 +10,6 @@ import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://stivenilarraza.com',
-  output: 'hybrid',
   adapter: vercel(),
   integrations: [react(), sitemap(), icon()],
   vite: {
