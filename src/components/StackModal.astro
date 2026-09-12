@@ -1,0 +1,21 @@
+---
+import BaseModal from "./BaseModal.astro";
+
+interface Props {
+    id: string;
+    technologies: string[];
+    triggerAttribute?: string;
+}
+
+const { id, technologies, triggerAttribute } = Astro.props;
+---
+
+<BaseModal {id} title="Tech Stack" {triggerAttribute} dialogClass="max-w-sm">
+    <div class="flex flex-wrap gap-2 p-6">
+        {technologies.map((tech) => (
+            <span class="px-3 py-1.5 rounded-md border border-border text-sm text-text-muted bg-bg">
+                {tech}
+            </span>
+        ))}
+    </div>
+</BaseModal>

@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import BaseModal from "./BaseModal.astro";
 
 interface Props {
     id: string;
@@ -11,123 +12,55 @@ interface Props {
 }
 
 const { id, title, src, downloadHref, shareTitle, triggerAttribute } = Astro.props;
-const trigger = triggerAttribute ?? `${id}-trigger`;
 ---
 
-<style is:global>
-    @keyframes pdf-modal-slide-in {
-        from { transform: translateX(-100%); opacity: 0; }
-        to   { transform: translateX(0);     opacity: 1; }
-    }
-    @keyframes pdf-modal-slide-out {
-        from { transform: translateX(0);     opacity: 1; }
-        to   { transform: translateX(-100%); opacity: 0; }
-    }
-    @keyframes pdf-modal-backdrop-in  { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes pdf-modal-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
-
-    .pdf-modal {
-        top: 0;
-        bottom: 0;
-    }
-    .pdf-modal[open] {
-        animation: pdf-modal-slide-in 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-    }
-    .pdf-modal.is-closing {
-        animation: pdf-modal-slide-out 0.28s cubic-bezier(0.55, 0, 1, 0.45) both;
-    }
-    .pdf-modal[open]::backdrop {
-        animation: pdf-modal-backdrop-in 0.35s ease both;
-    }
-    .pdf-modal.is-closing::backdrop {
-        animation: pdf-modal-backdrop-out 0.28s ease both;
-    }
-</style>
-
-<dialog
-    id={id}
-    aria-labelledby={`${id}-title`}
-    class="pdf-modal m-auto w-[calc(100%-2rem)] sm:w-full max-w-4xl max-h-[90dvh] rounded-xl border-2 border-border bg-surface p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm open:flex open:flex-col"
-    data-pdf-src={src}
-    data-pdf-download={downloadHref}
-    data-pdf-share-title={shareTitle}
-    data-pdf-trigger={trigger}>
-
-    <div class="flex items-center justify-between border-b-2 border-border px-6 py-4 shrink-0">
-        <span id={`${id}-title`} class="font-display text-sm tracking-widest uppercase text-text-highlight">
-            {title}
-        </span>
-        <button
-            class="pdf-modal-close flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:text-text hover:border-border border-2 border-transparent transition-colors"
-            aria-label="Close">
-            <Icon name="mdi:close" class="w-5 h-5" />
-        </button>
-    </div>
-
-    <div class="flex-1 overflow-hidden min-h-0 bg-bg">
+<BaseModal {id} {title} {triggerAttribute} dialogClass="max-w-4xl">
+    <div class="flex-1 overflow-hidden min-h-0 bg-bg h-full">
         <iframe
             class="pdf-modal-iframe w-full h-full min-h-[60dvh]"
             title={title}
+            data-pdf-src={src}
         ></iframe>
     </div>
 
-    <div class="flex items-center justify-end gap-4 border-t-2 border-border px-6 py-4 shrink-0">
-        <div class="flex gap-3 w-full sm:w-auto">
-            <a
-                class="pdf-modal-download btn flex-1 sm:flex-none flex items-center justify-center gap-2"
-                href={downloadHref}
-                download>
-                <Icon name="mdi:download" class="w-4 h-4 shrink-0" />
-                Download
-            </a>
-            <button class="pdf-modal-share btn btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2">
-                <Icon name="mdi:share-variant" class="w-4 h-4 shrink-0" />
-                <span class="pdf-modal-share-label">Share</span>
-            </button>
-        </div>
+    <div slot="footer" class="flex gap-3 w-full sm:w-auto">
+        <a
+            href={downloadHref}
+            download
+            class="btn flex-1 sm:flex-none flex items-center justify-center gap-2">
+            <Icon name="mdi:download" class="w-4 h-4 shrink-0" />
+            Download
+        </a>
+        <button
+            class="pdf-modal-share btn btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2"
+            data-pdf-share-title={shareTitle}
+            data-pdf-share-url={src}>
+            <Icon name="mdi:share-variant" class="w-4 h-4 shrink-0" />
+            <span class="pdf-modal-share-label">Share</span>
+        </button>
     </div>
-</dialog>
+</BaseModal>
 
 <script>
-    function initPdfModal(dialog: HTMLDialogElement) {
-        const src         = dialog.dataset.pdfSrc ?? "";
-        const downloadHref = dialog.dataset.pdfDownload ?? "";
-        const shareTitle  = dialog.dataset.pdfShareTitle ?? "";
-        const triggerAttr = dialog.dataset.pdfTrigger ?? "";
+    function initPdfExtras(dialog: HTMLDialogElement) {
+        const iframe    = dialog.querySelector<HTMLIFrameElement>(".pdf-modal-iframe");
+        const shareBtn  = dialog.querySelector<HTMLButtonElement>(".pdf-modal-share");
+        const shareLabel = dialog.querySelector<HTMLElement>(".pdf-modal-share-label");
 
-        const closeBtn    = dialog.querySelector<HTMLButtonElement>(".pdf-modal-close");
-        const iframe      = dialog.querySelector<HTMLIFrameElement>(".pdf-modal-iframe");
-        const shareBtn    = dialog.querySelector<HTMLButtonElement>(".pdf-modal-share");
-        const shareLabel  = dialog.querySelector<HTMLElement>(".pdf-modal-share-label");
-        const downloadLink = dialog.querySelector<HTMLAnchorElement>(".pdf-modal-download");
-
-        if (downloadLink) downloadLink.href = downloadHref;
-
-        function open() {
-            if (iframe && !iframe.src.endsWith(src)) iframe.src = src;
-            dialog.showModal();
+        if (iframe) {
+            const src = iframe.dataset.pdfSrc ?? "";
+            const observer = new MutationObserver(() => {
+                if (dialog.open && iframe.src !== src) iframe.src = src;
+            });
+            observer.observe(dialog, { attributes: true, attributeFilter: ["open"] });
         }
-
-        function close() {
-            dialog.classList.add("is-closing");
-            dialog.addEventListener("animationend", () => {
-                dialog.classList.remove("is-closing");
-                dialog.close();
-            }, { once: true });
-        }
-
-        document.querySelectorAll(`[data-${triggerAttr}]`).forEach((el) => {
-            el.addEventListener("click", open);
-        });
-
-        closeBtn?.addEventListener("click", close);
-        dialog.addEventListener("click", (e) => { if (e.target === dialog) close(); });
-        dialog.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
 
         shareBtn?.addEventListener("click", async () => {
-            const url = new URL(src, window.location.origin).href;
+            const url   = new URL(shareBtn.dataset.pdfShareUrl ?? "", window.location.origin).href;
+            const title = shareBtn.dataset.pdfShareTitle ?? "";
+
             if (navigator.share) {
-                try { await navigator.share({ title: shareTitle, url }); } catch {}
+                try { await navigator.share({ title, url }); } catch {}
                 return;
             }
             try {
@@ -138,10 +71,12 @@ const trigger = triggerAttribute ?? `${id}-trigger`;
         });
     }
 
-    function initAllPdfModals() {
-        document.querySelectorAll<HTMLDialogElement>("dialog.pdf-modal").forEach(initPdfModal);
+    function initAllPdfExtras() {
+        document.querySelectorAll<HTMLDialogElement>("dialog.base-modal").forEach((dialog) => {
+            if (dialog.querySelector(".pdf-modal-iframe")) initPdfExtras(dialog);
+        });
     }
 
-    initAllPdfModals();
-    document.addEventListener("astro:page-load", initAllPdfModals);
+    initAllPdfExtras();
+    document.addEventListener("astro:page-load", initAllPdfExtras);
 </script>

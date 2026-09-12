@@ -1,0 +1,103 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+    id: string;
+    title: string;
+    triggerAttribute?: string;
+    dialogClass?: string;
+}
+
+const { id, title, triggerAttribute, dialogClass = "max-w-4xl" } = Astro.props;
+const trigger = triggerAttribute ?? `${id}-trigger`;
+const hasFooter = Astro.slots.has("footer");
+---
+
+<style is:global>
+    @keyframes base-modal-in {
+        from { transform: translateX(-100%); opacity: 0; }
+        to   { transform: translateX(0);     opacity: 1; }
+    }
+    @keyframes base-modal-out {
+        from { transform: translateX(0);     opacity: 1; }
+        to   { transform: translateX(-100%); opacity: 0; }
+    }
+    @keyframes base-modal-backdrop-in  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes base-modal-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+
+    .base-modal { top: 0; bottom: 0; }
+    .base-modal[open] {
+        animation: base-modal-in 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+    .base-modal.is-closing {
+        animation: base-modal-out 0.28s cubic-bezier(0.55, 0, 1, 0.45) both;
+    }
+    .base-modal[open]::backdrop {
+        animation: base-modal-backdrop-in 0.35s ease both;
+    }
+    .base-modal.is-closing::backdrop {
+        animation: base-modal-backdrop-out 0.28s ease both;
+    }
+</style>
+
+<dialog
+    id={id}
+    aria-labelledby={`${id}-title`}
+    class:list={[
+        "base-modal m-auto w-[calc(100%-2rem)] sm:w-full max-h-[90dvh] rounded-xl border-2 border-border bg-surface p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm open:flex open:flex-col",
+        dialogClass,
+    ]}
+    data-modal-trigger={trigger}>
+
+    <div class="flex items-center justify-between border-b-2 border-border px-6 py-4 shrink-0">
+        <span id={`${id}-title`} class="font-display text-sm tracking-widest uppercase text-text-highlight">
+            {title}
+        </span>
+        <button
+            class="base-modal-close flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:text-text border-2 border-transparent hover:border-border transition-colors"
+            aria-label="Close">
+            <Icon name="mdi:close" class="w-5 h-5" />
+        </button>
+    </div>
+
+    <div class="flex-1 overflow-auto min-h-0">
+        <slot />
+    </div>
+
+    {hasFooter && (
+        <div class="flex items-center justify-end border-t-2 border-border px-6 py-4 shrink-0">
+            <slot name="footer" />
+        </div>
+    )}
+</dialog>
+
+<script>
+    function initBaseModal(dialog: HTMLDialogElement) {
+        const triggerAttr = dialog.dataset.modalTrigger ?? "";
+        const closeBtn = dialog.querySelector<HTMLButtonElement>(".base-modal-close");
+
+        function open()  { dialog.showModal(); }
+        function close() {
+            dialog.classList.add("is-closing");
+            dialog.addEventListener("animationend", () => {
+                dialog.classList.remove("is-closing");
+                dialog.close();
+            }, { once: true });
+        }
+
+        document.querySelectorAll(`[data-${triggerAttr}]`).forEach((el) => {
+            el.addEventListener("click", open);
+        });
+
+        closeBtn?.addEventListener("click", close);
+        dialog.addEventListener("click", (e) => { if (e.target === dialog) close(); });
+        dialog.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
+    }
+
+    function initAllBaseModals() {
+        document.querySelectorAll<HTMLDialogElement>("dialog.base-modal").forEach(initBaseModal);
+    }
+
+    initAllBaseModals();
+    document.addEventListener("astro:page-load", initAllBaseModals);
+</script>

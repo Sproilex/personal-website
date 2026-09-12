@@ -4,6 +4,7 @@ import { Icon } from "astro-icon/components";
 import { getCollection, render } from "astro:content";
 import { detailTransition } from "../../transitions";
 import PdfModal from "../../components/PdfModal.astro";
+import StackModal from "../../components/StackModal.astro";
 
 export async function getStaticPaths() {
     const projects = await getCollection("projects");
@@ -138,7 +139,7 @@ const {
                         <div class="flex items-center gap-3 justify-end">
                             <span class="meta-value">{stack}</span>
                             <button
-                                id="tech-stack-trigger"
+                                data-tech-stack-trigger
                                 aria-label="View full tech stack"
                                 class="px-2 py-0.5 rounded border border-border text-xs font-display tracking-widest uppercase text-text-muted hover:text-text hover:border-text-muted transition-colors shrink-0">
                                 Full Stack
@@ -213,82 +214,11 @@ const {
             </div>
         </div>
     </section>
-<!-- Tech Stack Modal -->
-<style is:global>
-    @keyframes tech-stack-in {
-        from { opacity: 0; transform: translateY(8px) scale(0.97); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes tech-stack-out {
-        from { opacity: 1; transform: translateY(0) scale(1); }
-        to   { opacity: 0; transform: translateY(8px) scale(0.97); }
-    }
-    @keyframes tech-stack-backdrop-in  { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes tech-stack-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
-
-    #tech-stack-modal[open] {
-        animation: tech-stack-in 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-    }
-    #tech-stack-modal.is-closing {
-        animation: tech-stack-out 0.2s cubic-bezier(0.55, 0, 1, 0.45) both;
-    }
-    #tech-stack-modal[open]::backdrop {
-        animation: tech-stack-backdrop-in 0.25s ease both;
-    }
-    #tech-stack-modal.is-closing::backdrop {
-        animation: tech-stack-backdrop-out 0.2s ease both;
-    }
-</style>
-
-<dialog
+<StackModal
     id="tech-stack-modal"
-    aria-labelledby="tech-stack-modal-title"
-    class="m-auto w-[calc(100%-2rem)] sm:w-full max-w-sm rounded-xl border-2 border-border bg-surface p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm open:flex open:flex-col">
-    <div class="flex items-center justify-between border-b-2 border-border px-6 py-4 shrink-0">
-        <span id="tech-stack-modal-title" class="font-display text-sm tracking-widest uppercase text-text-highlight">
-            Tech Stack
-        </span>
-        <button
-            id="tech-stack-modal-close"
-            aria-label="Close"
-            class="flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:text-text border-2 border-transparent hover:border-border transition-colors">
-            <Icon name="mdi:close" class="w-5 h-5" />
-        </button>
-    </div>
-    <div class="flex flex-wrap gap-2 p-6">
-        {technologies.map((tech) => (
-            <span class="px-3 py-1.5 rounded-md border border-border text-sm text-text-muted bg-bg">
-                {tech}
-            </span>
-        ))}
-    </div>
-</dialog>
-
-<script>
-    function initTechStackModal() {
-        const modal = document.getElementById("tech-stack-modal") as HTMLDialogElement | null;
-        const trigger = document.getElementById("tech-stack-trigger");
-        const closeBtn = document.getElementById("tech-stack-modal-close");
-        if (!modal) return;
-
-        function open() { modal!.showModal(); }
-        function close() {
-            modal!.classList.add("is-closing");
-            modal!.addEventListener("animationend", () => {
-                modal!.classList.remove("is-closing");
-                modal!.close();
-            }, { once: true });
-        }
-
-        trigger?.addEventListener("click", open);
-        closeBtn?.addEventListener("click", close);
-        modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
-        modal.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
-    }
-
-    initTechStackModal();
-    document.addEventListener("astro:page-load", initTechStackModal);
-</script>
+    {technologies}
+    triggerAttribute="tech-stack-trigger"
+/>
 
 {
     mockupFile && (
