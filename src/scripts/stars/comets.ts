@@ -136,7 +136,7 @@ export class CometManager {
     startSpawner(container: Container): void {
         if (this.spawnerStarted) return;
         this.spawnerStarted = true;
-        setInterval(() => this.spawnSingle(container), 700);
+        setInterval(() => this.spawnSingle(container), 1700);
         setInterval(() => this.sweep(container), 200);
     }
 }
@@ -259,7 +259,6 @@ class CometTrailUpdater {
                     duration: { value: this.trailDuration },
                 },
             },
-            "comet-trail",
         );
     }
 }
