@@ -6,6 +6,12 @@ import { getCollection } from "astro:content";
 import { projectsTransition } from "../../transitions";
 
 const projects = await getCollection("projects");
+
+const uniqueCategories = [...new Set(projects.map((p) => p.data.category).filter(Boolean))] as string[];
+const filterOptions = [
+    { label: "All", value: "all" },
+    ...uniqueCategories.map((c) => ({ label: c, value: c.toLowerCase() })),
+];
 ---
 
 <style>
@@ -52,12 +58,7 @@ const projects = await getCollection("projects");
             name="filter"
             defaultValue="all"
             aria-label="Filter projects by category"
-            options={[
-                { label: "All", value: "all" },
-                { label: "Product", value: "product" },
-                { label: "Platform", value: "platform" },
-                { label: "Data", value: "data" },
-            ]}
+            options={filterOptions}
         />
 
         <div class="projects-grid">
@@ -79,3 +80,28 @@ const projects = await getCollection("projects");
         </div>
     </section>
 </Page>
+
+<script>
+    function initFilter() {
+        const radios = document.querySelectorAll<HTMLInputElement>('input[name="filter"]');
+        const cards = document.querySelectorAll<HTMLElement>('article[data-category]');
+
+        function applyFilter(value: string) {
+            cards.forEach((card) => {
+                const matches = value === "all" || card.dataset.category === value;
+                card.style.display = matches ? "" : "none";
+            });
+        }
+
+        radios.forEach((radio) => {
+            radio.addEventListener("change", () => {
+                if (radio.checked) applyFilter(radio.value);
+            });
+        });
+
+        const checked = document.querySelector<HTMLInputElement>('input[name="filter"]:checked');
+        if (checked) applyFilter(checked.value);
+    }
+
+    document.addEventListener("astro:page-load", initFilter);
+</script>
