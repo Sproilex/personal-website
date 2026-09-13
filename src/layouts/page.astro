@@ -4,6 +4,7 @@ import "@fontsource/space-grotesk/600.css";
 import Navbar from "../components/Navbar.astro";
 import PdfModal from "../components/PdfModal.astro";
 import StarProjectCard from "../components/StarProjectCard.astro";
+import StarHoverHint from "../components/StarHoverHint.astro";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
@@ -80,6 +81,7 @@ const resolvedOgImage = ogImage
             </div>
 
             <StarProjectCard transition:persist />
+            <StarHoverHint transition:persist />
 
             <!-- BACKGROUND ATMOSPHERE -->
             <div

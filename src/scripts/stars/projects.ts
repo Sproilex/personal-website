@@ -140,6 +140,17 @@ export class ProjectManager {
         }
     }
 
+    private emitHintReady(canvasElement: HTMLElement): void {
+        if (this.projects.length === 0) return;
+        const first = this.projects[0];
+        const rect = canvasElement.getBoundingClientRect();
+        const cssX = rect.left + (first.x / 100) * rect.width;
+        const cssY = rect.top + (first.y / 100) * rect.height;
+        window.dispatchEvent(
+            new CustomEvent("project-hint-ready", { detail: { cssX, cssY } }),
+        );
+    }
+
     private particleOptions() {
         return {
             shape: { type: "sparkle" },
@@ -180,6 +191,8 @@ export class ProjectManager {
                 y: ((clientY - rect.top) / rect.height) * canvasSize.height,
             };
         };
+
+        this.emitHintReady(canvasElement);
 
         let lastHoveredId: string | undefined;
 

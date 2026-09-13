@@ -16,7 +16,7 @@ export const MIN_SPACING_PCT = 12;
 
 export const PROJECT_STAR_SIZE = 18;
 
-export const PROJECT_HIT_RADIUS = 35;
+export const PROJECT_HIT_RADIUS = 55;
 
 export const COMET_PALETTE = [
     "#ffffff",

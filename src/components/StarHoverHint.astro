@@ -1,0 +1,94 @@
+---
+// No props — positioned and shown by the project-hint-ready custom event,
+// hidden only when the user actually hovers a project star.
+---
+
+<!--
+    Layout: [curved arrow ←] [label text]
+    The whole box is placed to the RIGHT of the star, vertically centered on it.
+    The arrow's left tip points back toward the star.
+-->
+<div
+    id="star-hover-hint"
+    aria-hidden="true"
+    class="fixed z-[9998] pointer-events-none select-none opacity-0 transition-opacity duration-700 flex flex-row items-center gap-2 star-hint-breathe">
+    <!-- Curved arrow pointing LEFT toward the star -->
+    <svg
+        width="48"
+        height="32"
+        viewBox="0 0 48 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="text-text-muted shrink-0"
+        aria-hidden="true">
+        <!-- S-curve from right side to left tip -->
+        <path
+            d="M 46 16 C 36 2, 20 28, 5 16"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+        />
+        <!-- Arrowhead at (5, 16) pointing left -->
+        <polyline
+            points="12,9 5,16 12,23"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
+    </svg>
+    <span
+        class="font-display text-[10px] tracking-[0.2em] uppercase text-text-muted whitespace-nowrap">
+        hover a star
+    </span>
+</div>
+
+<style>
+    @keyframes hint-breathe {
+        0%, 100% { transform: scale(1); }
+        50%       { transform: scale(1.08); }
+    }
+    .star-hint-breathe {
+        animation: hint-breathe 2.8s ease-in-out infinite;
+        transform-origin: left center;
+    }
+</style>
+
+<script>
+    // Place the hint to the right of the star, vertically centered.
+    // The SVG arrow tip is at roughly x=0 within the box, so a 44px
+    // horizontal offset puts the tip ~44px to the right of the star center.
+    const STAR_OFFSET_X = 44;
+    const STAR_OFFSET_Y = -16;
+
+    function hint(): HTMLElement | null {
+        return document.getElementById("star-hover-hint");
+    }
+
+    function show(cssX: number, cssY: number): void {
+        const el = hint();
+        if (!el) return;
+
+        el.style.left = `${cssX + STAR_OFFSET_X}px`;
+        el.style.top = `${cssY + STAR_OFFSET_Y}px`;
+
+        requestAnimationFrame(() => {
+            el.classList.remove("opacity-0");
+        });
+    }
+
+    function hide(): void {
+        const el = hint();
+        if (!el) return;
+        el.classList.add("opacity-0");
+    }
+
+    window.addEventListener("project-hint-ready", (e: Event) => {
+        if (window.location.pathname !== "/") return;
+        const { cssX, cssY } = (e as CustomEvent<{ cssX: number; cssY: number }>).detail;
+        show(cssX, cssY);
+    });
+
+    // Hide permanently only on first actual hover.
+    window.addEventListener("project-hover", hide, { once: true });
+</script>
