@@ -86,7 +86,14 @@ import { contactTransition } from "../transitions";
             aria-labelledby="contact-form-heading"
             class="abilities flex justify-center items-center w-full lg:w-[40%]">
             <h2 id="contact-form-heading" class="sr-only">Contact form</h2>
-            <form class="flex flex-col gap-8 w-full" action="/api/contact" method="POST" novalidate>
+            <div id="contact-success" style="display:none" class="flex flex-col gap-6 justify-center h-full">
+                <p class="font-display text-3xl lg:text-4xl leading-[1.2] tracking-[-0.04em] text-text">
+                    Message received. <span class="text-text-highlight">We'll talk soon.</span>
+                </p>
+                <p class="text-text-muted text-base">I'll get back to you within 24 hours.</p>
+            </div>
+
+            <form id="contact-form" class="flex flex-col gap-8 w-full" action="/api/contact" method="POST" novalidate>
                 <div class="form-step">
                     <span aria-hidden="true">01</span>
                     <div>
@@ -173,29 +180,39 @@ import { contactTransition } from "../transitions";
 </Page>
 
 <script>
-    document.addEventListener('astro:page-load', () => {
-        const form = document.querySelector<HTMLFormElement>('form');
-        const btn = document.querySelector<HTMLButtonElement>('#contact-submit');
-        const status = document.querySelector<HTMLElement>('#contact-status');
-        if (!form || !btn || !status) return;
+    function initContactForm() {
+        const form = document.querySelector<HTMLFormElement>('#contact-form');
+        const success = document.querySelector<HTMLElement>('#contact-success');
+        if (!form || !success) return;
+        if (form.dataset.bound) return;
+        form.dataset.bound = '1';
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = form.querySelector<HTMLButtonElement>('#contact-submit')!;
+            const status = form.querySelector<HTMLElement>('#contact-status')!;
+
             btn.disabled = true;
             btn.textContent = 'Sending…';
-            status.textContent = '';
 
-            const res = await fetch('/api/contact', { method: 'POST', body: new FormData(form) });
+            const formData = new FormData(form);
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(formData)),
+            });
 
             if (res.ok) {
-                form.reset();
-                btn.textContent = 'Sent!';
-                status.textContent = 'Message received — talk soon.';
+                form.style.display = 'none';
+                success.style.display = 'flex';
             } else {
                 btn.disabled = false;
                 btn.textContent = 'Send Message';
                 status.textContent = 'Something went wrong. Try again.';
             }
         });
-    });
+    }
+
+    document.addEventListener('astro:page-load', initContactForm);
+    document.addEventListener('DOMContentLoaded', initContactForm);
 </script>

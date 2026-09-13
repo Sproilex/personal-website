@@ -1,15 +1,17 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 
+export const prerender = false;
+
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
 export const POST: APIRoute = async ({ request }) => {
-    console.log(request);
-    const data = await request.formData();
-    const name = data.get('name');
-    const email = data.get('email');
-    const needs = data.get('needs');
-    const message = data.get('message');
+    let name: string, email: string, needs: string, message: string;
+    try {
+        ({ name, email, needs, message } = JSON.parse(await request.text()));
+    } catch {
+        return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 });
+    }
 
     if (!name || !email || !message) {
         return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
@@ -18,7 +20,7 @@ export const POST: APIRoute = async ({ request }) => {
     const { error } = await resend.emails.send({
         from: 'contact@stivenilarraza.com',
         to: 'stivenilarraza@gmail.com',
-        replyTo: email.toString(),
+        replyTo: email,
         subject: `New contact from ${name}`,
         html: `
             <p><b>Name:</b> ${name}</p>
