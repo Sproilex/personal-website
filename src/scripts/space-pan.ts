@@ -64,11 +64,12 @@ function animatePan(targetX: number, targetY: number, duration: number): void {
     animId = requestAnimationFrame(tick);
 }
 
-// astro:page-load fires on the very first load (astro:after-swap does not).
-// Snap to the initial page position without animation.
+// This module is loaded via dynamic import (deferred), so astro:page-load
+// may have already fired. Apply the initial position immediately and also
+// register the listener so early navigations still work if somehow they beat us.
 let initialized = false;
 
-document.addEventListener("astro:page-load", () => {
+function applyInitialPosition() {
     if (initialized) return;
     initialized = true;
 
@@ -80,7 +81,10 @@ document.addEventListener("astro:page-load", () => {
     if (stars) {
         stars.style.transform = `translate(${currentX}px, ${currentY}px)`;
     }
-});
+}
+
+applyInitialPosition();
+document.addEventListener("astro:page-load", applyInitialPosition);
 
 // astro:after-swap fires on every navigation after the DOM is swapped.
 // Start the rAF pan here so it overlaps with the content entry animation.

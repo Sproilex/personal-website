@@ -12,7 +12,13 @@ export default defineConfig({
   site: 'https://stivenilarraza.com',
   adapter: vercel(),
   integrations: [react(), sitemap(), icon()],
+  build: {
+    inlineStylesheets: 'auto',
+  },
   vite: {
-    plugins: [tailwindcss()]
-  }
+    plugins: [tailwindcss()],
+    build: {
+      assetsInlineLimit: 12000,
+    },
+  },
 });

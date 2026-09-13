@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css";
-import "@fontsource/space-grotesk/600.css";
 import Navbar from "../components/Navbar.astro";
 import PdfModal from "../components/PdfModal.astro";
 import StarProjectCard from "../components/StarProjectCard.astro";
@@ -54,6 +53,7 @@ const resolvedOgImage = ogImage
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        <link rel="preload" href="/fonts/space-grotesk-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
 
         <title>{title}</title>
         <ClientRouter />
@@ -108,8 +108,15 @@ const resolvedOgImage = ogImage
         />
 
         <script>
-            import "../scripts/stars";
-            import "../scripts/space-pan";
+            const load = () => Promise.all([
+                import("../scripts/stars"),
+                import("../scripts/space-pan"),
+            ]);
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(load);
+            } else {
+                window.addEventListener('load', load);
+            }
         </script>
     </body>
 </html>
