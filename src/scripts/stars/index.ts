@@ -19,6 +19,12 @@ const initSpace = async (): Promise<void> => {
     await loadProjectPlugins(projectManager, cometManager);
     await loadAmbientReturn();
 
+    // Mobile canvas (~750×1624px) is ~7× smaller than desktop (~3840×2160px),
+    // so reduce particle counts proportionally to avoid overcrowding.
+    const isMobile = window.innerWidth < 768;
+    const starCount = isMobile ? 300 : 800;
+    const dotCount = isMobile ? 120 : 320;
+
     const container = await tsParticles.load({
         id: "stars",
 
@@ -43,8 +49,8 @@ const initSpace = async (): Promise<void> => {
             particles: {
                 number: {
                     // Fixed total: density scaling OFF so this never multiplies by canvas area.
-                    // 800 across 4× viewport ≈ 200 visible at any time.
-                    value: 800,
+                    // starCount scales the visible field to the viewport size (mobile vs desktop).
+                    value: starCount,
                     density: { enable: false },
                 },
 
@@ -108,7 +114,7 @@ const initSpace = async (): Promise<void> => {
                     },
 
                     dots: {
-                        number: { value: 320, density: { enable: false } },
+                        number: { value: dotCount, density: { enable: false } },
                         shape: { type: "circle" },
                         size: { value: { min: 0.2, max: 1.2 } },
                     },

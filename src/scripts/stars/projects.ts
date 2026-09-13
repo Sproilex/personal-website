@@ -12,7 +12,7 @@ import {
     type IInteractivityData,
 } from "@tsparticles/plugin-interactivity";
 
-import { MIN_SPACING_PCT, PROJECT_HIT_RADIUS, PROJECT_STAR_SIZE, STAR_ZONE } from "./constants";
+import { MIN_SPACING_PCT, PROJECT_HIT_RADIUS, PROJECT_STAR_SIZE, getStarZone } from "./constants";
 import type { ProjectData } from "./types";
 import type { CometManager } from "./comets";
 
@@ -91,7 +91,7 @@ export class ProjectManager {
     // Rejection sampling: up to 50 attempts per star, falls back to last candidate so init never blocks.
     private generatePositions(count: number): { x: number; y: number }[] {
         const placed: { x: number; y: number }[] = [];
-        const { xMin, xMax, yMin, yMax } = STAR_ZONE;
+        const { xMin, xMax, yMin, yMax } = getStarZone();
 
         for (let i = 0; i < count; i++) {
             let candidate = {
