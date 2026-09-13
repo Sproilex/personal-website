@@ -1,5 +1,7 @@
 import { tsParticles, type Container } from "@tsparticles/engine";
-import { loadFull } from "tsparticles";
+import { loadSlim } from "@tsparticles/slim";
+import { loadTwinkleUpdater } from "@tsparticles/updater-twinkle";
+import { loadDestroyUpdater } from "@tsparticles/updater-destroy";
 
 import { waitForLayout } from "./utils";
 import { loadSparkleShape } from "./shape";
@@ -13,15 +15,20 @@ const cometManager = new CometManager();
 const initSpace = async (): Promise<void> => {
     await waitForLayout();
 
-    await loadFull(tsParticles);
-    await loadSparkleShape();
-    await loadCometPlugins(cometManager);
-    await loadProjectPlugins(projectManager, cometManager);
-    await loadAmbientReturn();
+    const isMobile = window.innerWidth < 768;
+
+    await loadSlim(tsParticles);
+    await Promise.all([
+        loadTwinkleUpdater(tsParticles),
+        loadDestroyUpdater(tsParticles),
+        loadSparkleShape(),
+        loadAmbientReturn(),
+        loadCometPlugins(cometManager),
+        loadProjectPlugins(projectManager, cometManager),
+    ]);
 
     // Mobile canvas (~750×1624px) is ~7× smaller than desktop (~3840×2160px),
     // so reduce particle counts proportionally to avoid overcrowding.
-    const isMobile = window.innerWidth < 768;
     const starCount = isMobile ? 300 : 800;
     const dotCount = isMobile ? 120 : 320;
 
@@ -39,7 +46,7 @@ const initSpace = async (): Promise<void> => {
 
             fpsLimit: 60,
 
-            detectRetina: true,
+            detectRetina: !isMobile,
 
             motion: {
                 disable: false,
