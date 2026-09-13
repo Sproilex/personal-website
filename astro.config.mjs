@@ -19,6 +19,15 @@ export default defineConfig({
     plugins: [tailwindcss()],
     build: {
       assetsInlineLimit: 12000,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('@tsparticles') || id.includes('tsparticles')) {
+              return 'tsparticles';
+            }
+          },
+        },
+      },
     },
   },
 });
