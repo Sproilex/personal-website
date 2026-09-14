@@ -6,11 +6,15 @@ export const prerender = false;
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
 export const POST: APIRoute = async ({ request }) => {
-    let name: string, email: string, needs: string, message: string;
+    let name: string, email: string, needs: string, message: string, website: string;
     try {
-        ({ name, email, needs, message } = JSON.parse(await request.text()));
+        ({ name, email, needs, message, website } = JSON.parse(await request.text()));
     } catch {
         return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 });
+    }
+
+    if (website) {
+        return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
 
     if (!name || !email || !message) {
