@@ -1,6 +1,6 @@
 ---
 title: Personal Website
-description: A space-themed portfolio where every project lives as a star you can navigate to, built solo with Astro, tsParticles, and Vercel.
+description: My personal portfolio where every project lives as a star you can navigate to.
 role: Solo Developer & Designer
 type: Side Project
 company: Personal Project
