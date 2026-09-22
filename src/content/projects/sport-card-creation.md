@@ -4,7 +4,7 @@ description: A WooCommerce plugin to prepare a personalized trading card shop.
 role: Freelancer Senior WordPress Developer
 type: Freelance
 company: "Freelance"
-category: WooCommerce Plugin
+category: Wordpress Plugin
 technologies:
 - PHP
 - WordPress

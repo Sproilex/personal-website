@@ -4,7 +4,7 @@ description: My personal portfolio where every project lives as a star you can n
 role: Solo Developer & Designer
 type: Side Project
 company: Personal Project
-category: Portfolio
+category: Website
 technologies:
 - Astro
 - React
